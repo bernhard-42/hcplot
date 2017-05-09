@@ -13,7 +13,7 @@ setup(
     license = "Apache License 2.0",
     keywords = "jupyter ipython highcharts visualizations",
     packages=find_packages(),
-    package_data={'hcplot': ['js/*']},
+    package_data={'hcplot': ['js/*', 'css/*']},
     long_description=read('Readme.md'),
     classifiers=[
         "Development Status :: 4 - Beta",

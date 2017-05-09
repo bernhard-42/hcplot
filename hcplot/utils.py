@@ -19,11 +19,16 @@ import datetime
 import numpy as np
 import pandas as pd
 
-from IPython.display import Javascript, display
+from IPython.display import HTML, Javascript, display
 
 
 def loadLibraries():
     folder = os.path.dirname(__file__)
+    
+    with open(os.path.join(folder, "./css", "styles.css"), "r") as fd:
+        css = fd.read()
+    display(HTML("<style>%s</style>" % css))
+ 
     with open(os.path.join(folder, "./js", "load.js"), "r") as fd:
         js = fd.read()
     display(Javascript(js))
@@ -42,3 +47,17 @@ class ScipyEncoder(json.JSONEncoder):
             return np.asscalar(o)
         
         return json.JSONEncoder.default(self, o)
+
+
+def mapping(x, y, **kwargs):
+    result = {"x":x, "y":y}
+    result.update(kwargs)
+    return result
+
+
+def pivot(x=None, y=None, width=1024, ratio=2.0/3.0, labels=False):
+    return {"type":"grid",   "x":x, "y":y, "width":width, "ratio":ratio, "labels":labels}
+
+
+def single(width=1024, ratio=2.0/3.0):
+    return {"type":"single", "width":width, "ratio":ratio}

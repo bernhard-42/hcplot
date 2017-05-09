@@ -1,0 +1,22 @@
+.hcTable {
+    border-color:white !important; 
+    border-width:0px !important;
+}
+
+th.colHeader > div {
+  margin-left: 10px;
+  margin-right: 5px;
+  background-color:white;
+  text-align: center;
+}
+
+th.rowHeader > div {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  background-color:white;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  white-space: nowrap; 
+  writing-mode: vertical-lr;
+}

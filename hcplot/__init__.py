@@ -12,15 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .utils import loadLibraries, ScipyEncoder
+from .utils import loadLibraries, mapping, single, pivot
 from .figure import Figure
 from .geoms.points import Points
 
 
-def mapping(x, y, **kwargs):
-    result = {"x":x, "y":y}
-    result.update(kwargs)
-    return result
-
-def layout(t, x=None, y=None):
-    return {"type":t, "x":x, "y":y}
