@@ -48,16 +48,22 @@ class ScipyEncoder(json.JSONEncoder):
         
         return json.JSONEncoder.default(self, o)
 
+# Mapping Helpers
 
-def mapping(x, y, **kwargs):
-    result = {"x":x, "y":y}
-    result.update(kwargs)
-    return result
+def mapping(x, y=None):
+    return {"x":x, "y":y}
 
+# Layout Helpers
 
-def pivot(x=None, y=None, width=1024, ratio=2.0/3.0, labels=False):
-    return {"type":"grid",   "x":x, "y":y, "width":width, "ratio":ratio, "labels":labels}
+def single():
+    return {"type":"single"}
 
+def grid(x, y, labels=True, labelHeight=20):
+    return {"type":"grid", "x":x, "y":y, "labels":labels, "labelHeight":labelHeight}
 
-def single(width=1024, ratio=2.0/3.0):
-    return {"type":"single", "width":width, "ratio":ratio}
+def wrap(y, nrows=None, ncols=None, labels=True, labelHeight=20):
+    return {"type":"wrap", "y":y, "nrows":nrows, "ncols":ncols, "labels":labels, "labelHeight":labelHeight}
+
+def matrix(labels=True, labelHeight=20):
+    return {"type":"matrix", "labels":labels, "labelHeight":labelHeight}
+

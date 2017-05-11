@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .utils import loadLibraries, mapping, single, pivot
+from .utils import loadLibraries, mapping, single, grid, wrap, matrix
 from .figure import Figure
 from .geoms.points import Points
 

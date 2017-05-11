@@ -1,19 +1,16 @@
 .hcTable {
     border-color:white !important; 
     border-width:0px !important;
+    border-spacing: 1px !important;
 }
 
 th.colHeader > div {
-  margin-left: 10px;
-  margin-right: 5px;
-  background-color:white;
+  background-color:#f0f0f0;
   text-align: center;
 }
 
 th.rowHeader > div {
-  margin-top: 10px;
-  margin-bottom: 20px;
-  background-color:white;
+  background-color:#f0f0f0;
   height: 100%;
   display: flex;
   justify-content: center;

@@ -45,11 +45,20 @@ class GroupedData(object):
             self.colCategories = self.explodeCategories(colDims)
             self.colCount = len(self.colCategories)
 
+        self.minMax = {}
+
+
+    def getMinMax(self, col):
+        if self.minMax.get(col) is None:
+            self.minMax[col] = (self.df[col].min(), self.df[col].max())
+        return self.minMax[col]
+
 
     def explodeCategories(self, dims):
         categoryValues = [ sorted(self.df.groupby(dim).groups.keys()) for dim in dims ]
         categories =     [ list(zip(dims, cats)) for cats in itertools.product(*categoryValues) ]
         return categories
+
 
     def getShape(self):
         return (1 if self.rowCount is None else self.rowCount,
@@ -67,7 +76,7 @@ class GroupedData(object):
             return self.colCategories[colIndex]
         
         else:
-            return None
+            raise ValueError("Access type unknown")
 
         
     def getDataByIndex(self, rowIndex=None, colIndex=None):
@@ -77,17 +86,16 @@ class GroupedData(object):
                     "colCategories": self.colCategories[colIndex] if col else {},
                     "data": data}
         
-        if (rowIndex in [None, 0] and colIndex in [None, 0] and self.rowCount is None and self.colCount is None):
+        if rowIndex == 0 and colIndex == 0 and \
+           self.rowCount is None and self.colCount is None:                   # layout type single, matrix
             return makeDict(self.df)
         
-        if rowIndex is not None and colIndex is not None:
+        elif rowIndex is not None and colIndex is not None and \
+           self.rowCount is not None and self.colCount is not None:           # layout type grid
             index = self.rowCategories[rowIndex] + self.colCategories[colIndex]
             return makeDict(self.getDataByCategories(index), row=True, col=True)
         
-        elif rowIndex is not None:
-            return makeDict(self.getDataByCategories(self.rowCategories[rowIndex]), row=True)
-        
-        elif colIndex is not None:
+        elif colIndex is not None and self.colCount is not None:               # layout type wrap
             return makeDict(self.getDataByCategories(self.colCategories[colIndex]), col=True)
         
         else:
