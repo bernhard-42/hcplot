@@ -58,12 +58,11 @@ def mapping(x, y=None):
 def single():
     return {"type":"single"}
 
-def grid(x, y, labels=True, labelHeight=20):
-    return {"type":"grid", "x":x, "y":y, "labels":labels, "labelHeight":labelHeight}
+def grid(x, y, labels=True, scales="fixed", labelHeight=20):
+    return {"type":"grid", "x":x, "y":y, "scales":scales, "labels":labels, "labelHeight":labelHeight}
 
-def wrap(y, nrows=None, ncols=None, labels=True, labelHeight=20):
-    return {"type":"wrap", "y":y, "nrows":nrows, "ncols":ncols, "labels":labels, "labelHeight":labelHeight}
+def wrap(y, nrows=None, ncols=None, labels=True, scales="fixed", labelHeight=20):
+    return {"type":"wrap", "y":y, "nrows":nrows, "ncols":ncols, "scales":scales, "labels":labels, "labelHeight":labelHeight}
 
-def matrix(labels=True, labelHeight=20):
-    return {"type":"matrix", "labels":labels, "labelHeight":labelHeight}
-
+def matrix(labels=True, scales="fixed", labelHeight=20):
+    return {"type":"matrix", "scales":scales, "labels":labels, "labelHeight":labelHeight}

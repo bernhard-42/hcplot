@@ -79,8 +79,8 @@ class Figure(object):
             assert  isinstance(self.mapping["y"], (list, tuple)), "'y' has to be a list of column names [..., ]"
 
             self.data = GroupedData(data)
-            self.rows = len(self.mapping.get("x"))
-            self.cols = len(self.mapping.get("y"))
+            self.cols = len(self.mapping.get("x"))
+            self.rows = len(self.mapping.get("y"))
             self.count = self.rows * self.cols
 
         else:
@@ -102,14 +102,12 @@ class Figure(object):
         return self
 
 
-    def createContainer(self):
-        labelHeight = self.layout.get("labelHeight", 20)
-
-        layoutType = self.layout.get("type")
+    def createContainer(self, layoutType, xScaleFree, yScaleFree, labelHeight):
         if layoutType == "single":
             html = createGrid(self.id, self.width, self.ratio, 1, 1)
-
+                
         elif layoutType in ["grid", "wrap", "matrix"]:
+            
             if self.layout.get("labels"):
                 if layoutType == "matrix":
                     rowLabels = [["y = %s" % el] for el in self.mapping.get("y")]
@@ -120,12 +118,14 @@ class Figure(object):
 
                 if layoutType == "wrap":
                     html = createWrap(self.id, self.width, self.ratio, self.rows, self.cols, self.count,
-                                      colLabels, labelHeight)
+                                      colLabels, labelHeight, allYAxisLabels=yScaleFree)
                 else:
                     html = createGrid(self.id, self.width, self.ratio, self.rows, self.cols,
-                                      rowLabels, colLabels, labelHeight)
+                                      rowLabels, colLabels, labelHeight, 
+                                      allXAxisLabels=xScaleFree, allYAxisLabels=yScaleFree)
             else:
-                html = createGrid(self.id, self.width, self.ratio, self.rows, self.cols)
+                html = createGrid(self.id, self.width, self.ratio, self.rows, self.cols, 
+                                  allXAxisLabels=xScaleFree, allYAxisLabels=yScaleFree)
         
         else:
             raise NotImplementedError("Not implemented yet")
@@ -140,25 +140,42 @@ class Figure(object):
         else:
             return df[[mx, my]].to_dict("split")["data"]
 
+    
+    def getMinMax(self, layoutType, xScaleFree, yScaleFree):
+        xmin = ymin = xmax = ymax = None
+        if not (xScaleFree and yScaleFree):
+            if layoutType == "matrix":
+                allCols = list(set(self.mapping["x"]).union(set(self.mapping["y"])))
+                minMax = [self.data.getMinMax(col) for col in allCols]
+                if not xScaleFree:
+                    xmin = ymin = min(minMax, key=itemgetter(0))[0]
+                if not yScaleFree:
+                    xmax = ymax = max(minMax, key=itemgetter(1))[1]
+            else:
+                if not xScaleFree:
+                    xmin, xmax = self.data.getMinMax(self.mapping["x"])
+                if not yScaleFree:
+                    ymin, ymax = self.data.getMinMax(self.mapping["y"])
+        return xmin, ymin, xmax, ymax
+
 
     def createChart(self):
 
-        layoutType = self.layout.get("type")
-        html = self.createContainer()
+        layoutType = self.layout.get("type", "single")
+        scaleType  = self.layout.get("scales", "fixed")
+        labelHeight = self.layout.get("labelHeight", 20)
+
+        xScaleFree = (scaleType in ["free", "free_x"]) if layoutType != "wrap" else True
+        yScaleFree = (scaleType in ["free", "free_y"])
+
+        xmin, ymin, xmax, ymax = self.getMinMax(layoutType, xScaleFree, yScaleFree)
+
+        html = self.createContainer(layoutType, xScaleFree, yScaleFree, labelHeight)
 
         html += dedent("""
         <script>
             window.hc_charts.promise.then(function(HC) {
         """)
-        
-        if layoutType == "matrix":
-            allCols = list(set(self.mapping["x"]).union(set(self.mapping["y"])))
-            minMax = [self.data.getMinMax(col) for col in allCols]
-            xmin = ymin = min(minMax, key=itemgetter(0))[0]
-            xmax = ymax = max(minMax, key=itemgetter(1))[1]
-        else:
-            xmin, xmax = self.data.getMinMax(self.mapping["x"])
-            ymin, ymax = self.data.getMinMax(self.mapping["y"])
 
         i = 0
 
@@ -167,28 +184,24 @@ class Figure(object):
 
                 fig = Components().figure(zoomType="xy", exporting=False, title=None, legend=False)
 
-                if col == 0:
-                    fig.updateChart(marginLeft=50,   width=self.width//self.cols+40)
-                if row == self.rows-1:
-                    fig.updateChart(marginBottom=40, height=(self.width//self.cols)*self.ratio+30)
-
-                if True:
-                    fig.addXAxis(title=None, max=xmax, min=xmin, lineWidth=1, tickWidth=1, gridLineWidth=1)
-                    fig.addYAxis(title=None, max=ymax, min=ymin, lineWidth=1, tickWidth=1, gridLineWidth=1)
-                else:
-                    fig.addXAxis(title=None, lineWidth=1, tickWidth=1, gridLineWidth=1)
-                    fig.addYAxis(title=None, lineWidth=1, tickWidth=1, gridLineWidth=1)
+                fig.addXAxis(title=None, max=xmax, min=xmin, lineWidth=1, tickWidth=1, gridLineWidth=1)
+                fig.addYAxis(title=None, max=ymax, min=ymin, lineWidth=1, tickWidth=1, gridLineWidth=1)
                     
-                if col != 0:
-                    fig.updateYAxis(labels=False)
-                                    
-                if row != self.rows - 1 and layoutType != "wrap":
+                if xScaleFree or row == self.rows - 1:
+                    fig.updateChart(marginBottom=40, height=(self.width//self.cols)*self.ratio+30)
+                else:
                     fig.updateXAxis(labels=False)
                 
+                if yScaleFree or col == 0:
+                    fig.updateChart(marginLeft=50,   width=self.width//self.cols+40)
+                else:
+                    fig.updateYAxis(labels=False)
+
                 if i != self.count - 1:
                     fig.updateFigure(credits=False)
 
                 if i < self.count:
+                    isEmpty = True
                     for layer in self.layers:
                         mx, my = self.mapping["x"], self.mapping["y"]
 
@@ -205,15 +218,23 @@ class Figure(object):
                             mx = mx[col]
                             my = my[row]
                             data = self.getDataSlice(None, None, mx, my)
+
+                        if isEmpty:
+                            isEmpty = not (len(data) > 0)
                             
                         # TODO: clean to use layer data if exists
                         fig.addSeries(my, data, layer.options)
 
                     container = "hc_%s_%d-%d" % (self.id, row, col)
-                    html += dedent("""
-                    //      console.log("%d-%d")
-                            HC.chart("%s", %s);
-                    """) % (row, col, container, json.dumps(fig.get(), cls=ScipyEncoder))
+                    if isEmpty and xScaleFree and yScaleFree:
+                        html += dedent("""
+                        //      console.log("%d-%d")
+                        """) % (row, col)
+                    else:
+                        html += dedent("""
+                        //      console.log("%d-%d")
+                                HC.chart("%s", %s);
+                        """) % (row, col, container, json.dumps(fig.get(), cls=ScipyEncoder))
 
                     i += 1
 

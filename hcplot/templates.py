@@ -12,27 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from textwrap import dedent, indent
+from textwrap import indent, dedent
 
 
 defaultRowMargin = 25
 defaultColMargin = 50
 
-def style(width, height, rowMargin, colMargin):
+def style(width, height, rowMargin, colMargin, rightMargin=0):
     css = "width:%dpx; height:%dpx;" % (width, height)
-    css += " padding:1px 1px %dpx %dpx;" % (max(1, rowMargin), max(1, colMargin))
+    css += " padding:1px %dpx %dpx %dpx;" % (rightMargin, max(1, rowMargin), max(1, colMargin))
     return css
 
 
 def indent2(text):
     return indent(dedent(text), "  ")
-    
 
+    
 def indent4(text):
     return indent(dedent(text), "    ")
 
 
-def createGrid(containerId, width, ratio, rows, cols, rowLabels=[], colLabels=[], labelHeight=20, labelAllRows=False):
+def createGrid(containerId, width, ratio, rows, cols, rowLabels=[], colLabels=[], 
+               labelHeight=20, allXAxisLabels=False, allYAxisLabels=False):
     
     w = width // cols
     h = w * ratio
@@ -44,30 +45,29 @@ def createGrid(containerId, width, ratio, rows, cols, rowLabels=[], colLabels=[]
 
     for row in range(rows):
         
-        if labelAllRows or (colHeaders > 0 and row == 0):
-            
+        if colHeaders > 0 and row == 0:
             # print all column header hierarchies
             for c in range(colHeaders):
                 html += """  <tr id="hc_%s_%d" class="hcTable">\n""" % (containerId, row)
 
                 for col in range(cols):
-                    colMargin = defaultColMargin if col == 0 and row == 0 else 0
+                    colMargin = defaultColMargin if ((col == 0 and row == 0) or allYAxisLabels) else 0
                     html += indent4("""
                     <th class="hcTable colHeader" style="%s">
                         <div>%s</div>
-                    </th>""" % (style(w + colMargin, labelHeight, 0, colMargin), colLabels[col][c]))
+                    </th>""" % (style(w + colMargin, labelHeight, 0, colMargin, 10), colLabels[col][c]))
 
                 # if there are row headers, print empty boxes
                 for r in range(rowHeaders):
                     html += indent2("""  <th class="hcTable" style="%s">
-                    </th>""" % style(labelHeight, labelHeight, 0, colMargin))
+                    </th>""" % style(labelHeight, labelHeight, 0, 0))
 
                 html += "  </tr>\n"
         
         html += """  <tr id="hc_%s_%d" class="hcTable">\n""" % (containerId, row)
         for col in range(cols):
-            colMargin = defaultColMargin if col == 0 else 0
-            rowMargin = defaultRowMargin if row == rows - 1       else 0
+            colMargin = defaultColMargin if ((col == 0) or allYAxisLabels       ) else 0
+            rowMargin = defaultRowMargin if ((row == rows - 1) or allXAxisLabels) else 0
 
             html += indent4("""    
             <td class="hcTable">
@@ -77,18 +77,19 @@ def createGrid(containerId, width, ratio, rows, cols, rowLabels=[], colLabels=[]
         
         # print row header hierarchies
         for r in range(rowHeaders):
-            rowMargin = defaultRowMargin if row == rows - 1 else 0
+            rowMargin = defaultRowMargin if ((row == rows - 1) or allYAxisLabels) else 0
             html += indent4("""
             <th class="hcTable rowHeader" style="%s">
                 <div>%s</div>
-            </th>""" % (style(labelHeight, h + rowMargin, rowMargin, colMargin), rowLabels[row][r]))
+            </th>""" % (style(labelHeight, h + rowMargin, rowMargin, 0), rowLabels[row][r]))
                 
         html += "\n  </tr>\n"
     html += "</table>\n"
     return html
 
 
-def createWrap(containerId, width, ratio, rows, cols, count, colLabels=[], labelHeight=20):
+def createWrap(containerId, width, ratio, rows, cols, count, colLabels=[], 
+               labelHeight=20, allYAxisLabels=False):
     w = width // cols
     h = w * ratio
     
@@ -104,30 +105,30 @@ def createWrap(containerId, width, ratio, rows, cols, count, colLabels=[], label
             html += """  <tr id="hc_%s_%d" class="hcTable">\n""" % (containerId, row)
             j2 = j
             for col in range(cols):
-                colMargin = defaultColMargin if col == 0 else 0
+                colMargin = defaultColMargin if ((col == 0) or allYAxisLabels) else 0
                 if j2 < count:
                     html += indent4("""
                     <th class="hcTable colHeader" style="%s">
                         <div>%s</div>
-                    </th>""" % (style(w + colMargin, labelHeight, 0, colMargin), colLabels[j2][c]))
+                    </th>""" % (style(w + colMargin, labelHeight, 0, colMargin, 10), colLabels[j2][c]))
                     j2 += 1
                 else:
                     html += indent4("""
                     <th class="hcTable" style="%s">
                         <div></div>
-                    </th>""" % (style(w + colMargin, labelHeight, 0, colMargin)))
+                    </th>""" % (style(w + colMargin, labelHeight, 0, colMargin, 10)))
             html += "\n  </tr>\n"
         j = j2
 
         html += """  <tr id="hc_%s_%d" class="hcTable">\n""" % (containerId, row)
         for col in range(cols):
-            colMargin = defaultColMargin if col == 0 and row == 0 else 0
+            colMargin = defaultColMargin if ((col == 0 and row == 0) or allYAxisLabels) else 0
             if i < count:
                 html += indent4("""    
                 <td class="hcTable">
                     <div id="hc_%s_%d-%d" style="%s"></div>
                 </td>
-                """ % (containerId, row, col, style(w + colMargin, h + defaultRowMargin, defaultRowMargin, 0)))
+                """ % (containerId, row, col, style(w + colMargin, h + defaultRowMargin + 5, defaultRowMargin + 5, 0)))
             else:
                 html += indent4("""    
                 <td class="hcTable">
@@ -141,3 +142,4 @@ def createWrap(containerId, width, ratio, rows, cols, count, colLabels=[], label
     html += "</table>\n"
  
     return html
+
