@@ -12,6 +12,7 @@ th.colHeader > div {
 th.rowHeader > div {
   background-color:#f0f0f0;
   height: 100%;
+  width: inherit;
   display: flex;
   justify-content: center;
   white-space: nowrap; 
