@@ -22,100 +22,91 @@ from functools import reduce
 
 class GroupedData(object):
 
-    def __init__(self, data, rowDims=None, colDims=None):
+    def __init__(self, data, colDims=[], rowDims=[]):
+        assert isinstance(data, (dict, pd.DataFrame)), "Data must be eiter ColumnDataList or a Pandas DataFrame"
         
-        self.df = None
-        if isinstance(data, dict):
-            self.df = pd.DataFrame(data)
-        elif isinstance(data, pd.DataFrame):
-            self.df = data
-
-        self.rowDims = rowDims
         self.colDims = colDims
+        self.rowDims = rowDims
+        self.allDims = colDims + rowDims
+        self.multiIndex = len(self.allDims) > 1
+        self.noIndex = len(self.allDims) == 0
+        
+        self.df = data if isinstance(data, pd.DataFrame) else pd.DataFrame(data)
+        self.levels = {}
+        
+        self.colCategories = self.rowCategories = []
+        
+        if not self.noIndex:
+            self.df, self.levels, self.colLevels, self.rowLevels = self._indexData()
+            self.colCategories, self.rowCategories = self._createCategories()
 
-        self.rowCategories = []
-        self.rowCount = None
-        if rowDims is not None:
-            self.rowCategories = self.explodeCategories(rowDims)
-            self.rowCount = len(self.rowCategories)
-
-        self.colCategories = []
-        self.colCount = None
-        if colDims is not None:
-            self.colCategories = self.explodeCategories(colDims)
-            self.colCount = len(self.colCategories)
+        self.colCount = len(self.colCategories)
+        self.rowCount = len(self.rowCategories)
 
         self.minMax = {}
+    
+    
+    def _indexData(self):
+        df = self.df.set_index(self.allDims)
+        df.sortlevel(inplace=True)
+        if self.multiIndex:
+            levels = [x.tolist() for x in df.index.unique().levels]
+        else:
+            levels = [sorted(df.index.unique().tolist())]
+        return df, levels, levels[:len(self.colDims)], levels[len(self.colDims):]
 
+    
+    def _createCategories(self):
+        result = []
+        for levels in [self.colLevels, self.rowLevels]:
+            if len(levels) == 1:
+                result.append([(l,) for l in levels[0]])
+            else:
+                result.append(list(itertools.product(*levels)))
+        return result
 
+    
+    def _getLabels(self, dims, categories, func):
+        if func is None:
+            func = lambda k,v: "%s : %s" % (k,v)
+        if len(dims) == 0:
+            return []
+        else:
+            return [[func(k,v) for k,v in zip(dims, val)] for val in categories]
+
+        
+    def getRowLabels(self, func=None):
+        return self._getLabels(self.rowDims, self.rowCategories, func)
+
+    
+    def getColLabels(self, func=None):
+        return self._getLabels(self.colDims, self.colCategories, func)
+    
+    
+    def getShape(self):
+        return (self.rowCount, self.colCount)
+
+        
     def getMinMax(self, col):
         if self.minMax.get(col) is None:
             self.minMax[col] = (self.df[col].min(), self.df[col].max())
         return self.minMax[col]
-
-
-    def explodeCategories(self, dims):
-        categoryValues = [ sorted(self.df.groupby(dim).groups.keys()) for dim in dims ]
-        categories =     [ list(zip(dims, cats)) for cats in itertools.product(*categoryValues) ]
+    
+    
+    def getCategoriesByIndex(self, colIndex, rowIndex=None):
+        categories = []
+        if colIndex is not None:
+            categories += self.colCategories[colIndex]
+        if rowIndex is not None:
+            categories += self.rowCategories[rowIndex]            
         return categories
 
 
-    def getShape(self):
-        return (1 if self.rowCount is None else self.rowCount,
-                1 if self.colCount is None else self.colCount)
-
-    
-    def getCategoriesByIndex(self, rowIndex=None, colIndex=None):
-        if rowIndex is not None and colIndex is not None:
-            return (self.rowCategories[rowIndex], self.colCategories[colIndex])
-        
-        elif rowIndex is not None:
-            return self.rowCategories[rowIndex]
-        
-        elif colIndex is not None:
-            return self.colCategories[colIndex]
-        
+    def getDataByIndex(self, colIndex, rowIndex=None):
+        categories = self.getCategoriesByIndex(colIndex, rowIndex)   
+        if self.noIndex:
+            return self.df
+        elif self.multiIndex:
+            return self.df.xs(categories, level=self.allDims)
         else:
-            raise ValueError("Access type unknown")
-
-        
-    def getDataByIndex(self, rowIndex=None, colIndex=None):
-
-        def makeDict(data, row=False, col=False):
-            return {"rowCategories": self.rowCategories[rowIndex] if row else {}, 
-                    "colCategories": self.colCategories[colIndex] if col else {},
-                    "data": data}
-        
-        if rowIndex == 0 and colIndex == 0 and \
-           self.rowCount is None and self.colCount is None:                   # layout type single, matrix
-            return makeDict(self.df)
-        
-        elif rowIndex is not None and colIndex is not None and \
-           self.rowCount is not None and self.colCount is not None:           # layout type grid
-            index = self.rowCategories[rowIndex] + self.colCategories[colIndex]
-            return makeDict(self.getDataByCategories(index), row=True, col=True)
-        
-        elif colIndex is not None and self.colCount is not None:               # layout type wrap
-            return makeDict(self.getDataByCategories(self.colCategories[colIndex]), col=True)
-        
-        else:
-            return makeDict(self.df)
-
-
-    def getDataByCategories(self, categories):
-        cond = reduce(np.logical_and, [self.df[cat[0]] == cat[1] for cat in categories])
-        return self.df[cond]
-  
-    
-    def getRowLabels(self):
-        if self.rowCount == 0:
-            return []
-        else:
-            return [["%s : %s" % (val[0], val[1]) for val in vals] for vals in self.rowCategories]
-
-
-    def getColLabels(self):
-        if self.colCount == 0:
-            return []
-        else:
-            return [["%s : %s" % (val[0], val[1]) for val in vals] for vals in self.colCategories]
+            return self.df.loc[categories[0]]

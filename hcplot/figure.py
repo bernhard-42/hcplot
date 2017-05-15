@@ -134,7 +134,7 @@ class Figure(object):
 
     
     def getDataSlice(self, row, col, mx, my):
-        df = self.data.getDataByIndex(row, col)["data"]
+        df = self.data.getDataByIndex(col, row)
         if mx == my:
             return [[val[0], val[0]] for val in df[[mx]].to_dict("split")["data"]]
         else:
@@ -142,6 +142,7 @@ class Figure(object):
 
     
     def getMinMax(self, layoutType, xScaleFree, yScaleFree):
+        print(layoutType, "x", xScaleFree, "y", yScaleFree)
         xmin = ymin = xmax = ymax = None
         if not (xScaleFree and yScaleFree):
             if layoutType == "matrix":
@@ -165,7 +166,7 @@ class Figure(object):
         scaleType  = self.layout.get("scales", "fixed")
         labelHeight = self.layout.get("labelHeight", 20)
 
-        xScaleFree = (scaleType in ["free", "free_x"]) if layoutType != "wrap" else True
+        xScaleFree = (scaleType in ["free", "free_x"]) # if layoutType != "wrap" else True
         yScaleFree = (scaleType in ["free", "free_y"])
 
         xmin, ymin, xmax, ymax = self.getMinMax(layoutType, xScaleFree, yScaleFree)
@@ -187,7 +188,7 @@ class Figure(object):
                 fig.addXAxis(title=None, max=xmax, min=xmin, lineWidth=1, tickWidth=1, gridLineWidth=1)
                 fig.addYAxis(title=None, max=ymax, min=ymin, lineWidth=1, tickWidth=1, gridLineWidth=1)
                     
-                if xScaleFree or row == self.rows - 1:
+                if xScaleFree or row == self.rows - 1 or layoutType == "wrap":
                     fig.updateChart(marginBottom=40, height=(self.width//self.cols)*self.ratio+30)
                 else:
                     fig.updateXAxis(labels=False)
