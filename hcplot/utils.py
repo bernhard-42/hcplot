@@ -21,6 +21,8 @@ import pandas as pd
 
 from IPython.display import HTML, Javascript, display
 
+from .scale import brewer, d3, shapes
+
 
 def loadLibraries():
     folder = os.path.dirname(__file__)
@@ -48,10 +50,18 @@ class ScipyEncoder(json.JSONEncoder):
         
         return json.JSONEncoder.default(self, o)
 
+
+def update(d, defaults):
+    def2 = defaults.copy()
+    if d is not None:
+        def2.update(d)
+    return def2
+
 # Mapping Helpers
 
-def mapping(x, y=None):
-    return {"x":x, "y":y}
+def mapping(x, y=None, color=None, shape=None, size=None):
+    return {"x":x, "y":y, "color":color, "shape":shape, "size":size}
+
 
 # Layout Helpers
 
@@ -66,3 +76,12 @@ def wrap(y, nrows=None, ncols=None, labels=True, scales="fixed", labelHeight=20)
 
 def matrix(labels=True, scales="fixed", labelHeight=20):
     return {"type":"matrix", "scales":scales, "labels":labels, "labelHeight":labelHeight}
+
+
+# Scales Helper
+
+def scales(color=brewer("qual", "Accent"),
+           fill=brewer("qual", "Accent"),
+           shape=shapes(),
+           size=None, area=None, lineType=None):
+    return {"color":color, "shape":shape, "size":size, "area":area, "lineType":lineType, "fill":fill}

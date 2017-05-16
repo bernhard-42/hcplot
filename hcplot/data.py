@@ -31,17 +31,17 @@ class GroupedData(object):
         self.multiIndex = len(self.allDims) > 1
         self.noIndex = len(self.allDims) == 0
         
-        self.df = data if isinstance(data, pd.DataFrame) else pd.DataFrame(data)
+        self.df = data.copy() if isinstance(data, pd.DataFrame) else pd.DataFrame(data)
         self.levels = {}
         
-        self.colCategories = self.rowCategories = []
+        self.colLevels = self.rowLevels = []
         
         if not self.noIndex:
             self.df, self.levels, self.colLevels, self.rowLevels = self._indexData()
-            self.colCategories, self.rowCategories = self._createCategories()
+            self.colLevels, self.rowLevels = self._createLevels()
 
-        self.colCount = len(self.colCategories)
-        self.rowCount = len(self.rowCategories)
+        self.colCount = len(self.colLevels)
+        self.rowCount = len(self.rowLevels)
 
         self.minMax = {}
     
@@ -56,7 +56,7 @@ class GroupedData(object):
         return df, levels, levels[:len(self.colDims)], levels[len(self.colDims):]
 
     
-    def _createCategories(self):
+    def _createLevels(self):
         result = []
         for levels in [self.colLevels, self.rowLevels]:
             if len(levels) == 1:
@@ -66,21 +66,21 @@ class GroupedData(object):
         return result
 
     
-    def _getLabels(self, dims, categories, func):
+    def _getLabels(self, dims, levels, func):
         if func is None:
             func = lambda k,v: "%s : %s" % (k,v)
         if len(dims) == 0:
             return []
         else:
-            return [[func(k,v) for k,v in zip(dims, val)] for val in categories]
+            return [[func(k,v) for k,v in zip(dims, val)] for val in levels]
 
         
     def getRowLabels(self, func=None):
-        return self._getLabels(self.rowDims, self.rowCategories, func)
+        return self._getLabels(self.rowDims, self.rowLevels, func)
 
     
     def getColLabels(self, func=None):
-        return self._getLabels(self.colDims, self.colCategories, func)
+        return self._getLabels(self.colDims, self.colLevels, func)
     
     
     def getShape(self):
@@ -93,20 +93,20 @@ class GroupedData(object):
         return self.minMax[col]
     
     
-    def getCategoriesByIndex(self, colIndex, rowIndex=None):
-        categories = []
+    def getLevelsByIndex(self, colIndex, rowIndex=None):
+        levels = []
         if colIndex is not None:
-            categories += self.colCategories[colIndex]
+            levels += self.colLevels[colIndex]
         if rowIndex is not None:
-            categories += self.rowCategories[rowIndex]            
-        return categories
+            levels += self.rowLevels[rowIndex]            
+        return levels
 
 
     def getDataByIndex(self, colIndex, rowIndex=None):
-        categories = self.getCategoriesByIndex(colIndex, rowIndex)   
+        levels = self.getLevelsByIndex(colIndex, rowIndex)   
         if self.noIndex:
             return self.df
         elif self.multiIndex:
-            return self.df.xs(categories, level=self.allDims)
+            return self.df.xs(levels, level=self.allDims)
         else:
-            return self.df.loc[categories[0]]
+            return self.df.loc[levels[0]]

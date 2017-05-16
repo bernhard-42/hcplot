@@ -12,8 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from .color import ColorBrewer, D3Colors
+from .shape import Shape
 
-class Scale(object):
+def brewer(typ, palette):
+    return lambda size: getattr(ColorBrewer, typ)(palette, size)
+
+def d3(typ):
+    return getattr(D3Colors, typ)
+
+def shapes():
+    return Shape.get
+
+
+# class Scale(object):
     
-    def __init__(self):
-        pass
+#     def __init__(self):
+#         pass
+
+
+# class Color(Scale):
+
+#     @classmethod
+#     def brewer(self, typ, palette):
+#         return lambda size: getattr(ColorBrewer, typ)(palette, size)
+
+#     @classmethod
+#     def d3(self, typ):
+#         return getattr(D3Colors, typ)

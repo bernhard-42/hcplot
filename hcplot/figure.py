@@ -13,7 +13,9 @@
 # limitations under the License.
 
 from .data import GroupedData
-from .utils import ScipyEncoder, single
+from .utils import ScipyEncoder, update
+from .utils import scales as defaultScales
+from .utils import single as defaultSingle
 from .components import Components
 from .templates import createGrid, createWrap
 
@@ -27,12 +29,14 @@ from operator import itemgetter
 
 class Figure(object):
     
-    def __init__(self, data, mapping, layout=None, coord=None, scaleX=None, scaleY=None, width=1024, ratio=2/3):
+    def __init__(self, data, mapping, layout=None, scales=None, coord=None,
+                 width=1024, ratio=2/3, performanceTreshold=1000):
         self.id = str(uuid4())
         self.rawData = data
 
         self.mapping = mapping        
-        self.layout = single() if layout is None else layout
+        self.scales = update(scales, defaultScales())
+        self.layout = update(layout, defaultSingle())
 
         layoutType = self.layout.get("type")
         
@@ -87,11 +91,10 @@ class Figure(object):
             raise ValueError("Unknow layout type %s", layoutType)
 
         self.coord = coord
-        self.scaleX = scaleX
-        self.scaleY = scaleY
         
         self.width = width
         self.ratio = ratio
+        self.performanceTreshold = performanceTreshold
 
         self.layers = []
 
@@ -133,16 +136,11 @@ class Figure(object):
         return html
 
     
-    def getDataSlice(self, row, col, mx, my):
-        df = self.data.getDataByIndex(col, row)
-        if mx == my:
-            return [[val[0], val[0]] for val in df[[mx]].to_dict("split")["data"]]
-        else:
-            return df[[mx, my]].to_dict("split")["data"]
+    def getDataSlice(self, row, col):
+        return self.data.getDataByIndex(col, row)
 
     
     def getMinMax(self, layoutType, xScaleFree, yScaleFree):
-        print(layoutType, "x", xScaleFree, "y", yScaleFree)
         xmin = ymin = xmax = ymax = None
         if not (xScaleFree and yScaleFree):
             if layoutType == "matrix":
@@ -202,28 +200,25 @@ class Figure(object):
                     fig.updateFigure(credits=False)
 
                 if i < self.count:
-                    isEmpty = True
+                    mx, my = self.mapping["x"], self.mapping["y"]
+
+                    if layoutType == "single":
+                        data = self.getDataSlice(None, None)
+
+                    elif layoutType == "wrap":
+                        data = self.getDataSlice(0, i)
+
+                    elif layoutType == "grid":
+                        data = self.getDataSlice(row, col)
+
+                    elif layoutType == "matrix":
+                        mx = mx[col]
+                        my = my[row]
+                        data = self.getDataSlice(None, None)
+
+                    isEmpty = not (len(data) > 0)
                     for layer in self.layers:
-                        mx, my = self.mapping["x"], self.mapping["y"]
-
-                        if layoutType == "single":
-                            data = self.getDataSlice(None, None, mx, my)
-                            
-                        elif layoutType == "wrap":
-                            data = self.getDataSlice(0, i, mx, my)
-                            
-                        elif layoutType == "grid":
-                            data = self.getDataSlice(row, col, mx, my)
-                            
-                        elif layoutType == "matrix":
-                            mx = mx[col]
-                            my = my[row]
-                            data = self.getDataSlice(None, None, mx, my)
-
-                        if isEmpty:
-                            isEmpty = not (len(data) > 0)
-                            
-                        # TODO: clean to use layer data if exists
+                        data = layer.prepareData(data, mx, my)
                         fig.addSeries(my, data, layer.options)
 
                     container = "hc_%s_%d-%d" % (self.id, row, col)
@@ -249,4 +244,3 @@ class Figure(object):
     
     def _repr_html_(self):
         return self.createChart()
-

@@ -15,87 +15,104 @@
 
 class Components(object):
 
-	def figure(self, zoomType="xy", title=None, exporting=True, legend=True):
-		self.figure = {
-			"chart":     { 
-				"zoomType": zoomType,
-				"spacingBottom": 5,
-				"spacingTop": 5,
-				"spacingLeft": 5,
-				"spacingRight": 5
-			},
-			"credits" : {
-				"position": {"y": -5}
-			},
-			"exporting": { "enabled": exporting },
-			"title":     { "text": title },
-			"legend":    { "enabled": legend },
-	        "series":    []
-		}
-		return self
+    def figure(self, zoomType="xy", title=None, exporting=True, legend=True):
+        self.figure = {
+            "chart":     { 
+                "zoomType": zoomType,
+                "spacingBottom": 5,
+                "spacingTop": 5,
+                "spacingLeft": 5,
+                "spacingRight": 5
+            },
+            "credits" : {
+                "position": {"y": -5}
+            },
+            "exporting": { "enabled": exporting },
+            "title":     { "text": title },
+            "legend":    { "enabled": legend },
+            "series":    []
+        }
+        return self
 
 
-	def get(self):
-		return self.figure
+    def get(self):
+        return self.figure
 
 
-	def updateFigure(self, **options):
-		self.figure.update(options)
-		return self
+    def updateFigure(self, **options):
+        self.figure.update(options)
+        return self
 
-	def updateChart(self, **options):
-		self.figure["chart"].update(options)
-		return self
+    def updateChart(self, **options):
+        self.figure["chart"].update(options)
+        return self
 
-	def _cleanOptions(self, options):
-		
-		def setAttr(key, attr, options):
-			if key in options.keys():
-				options[key] = { attr: options[key] }
+    def _cleanOptions(self, options):
+        
+        def setAttr(key, attr, options):
+            if key in options.keys():
+                options[key] = { attr: options[key] }
 
-		def setEnabled(key, options):
-			setAttr(key, "enabled", options)
+        def setEnabled(key, options):
+            setAttr(key, "enabled", options)
 
-		def setText(key, options):
-			setAttr(key, "text", options)
+        def setText(key, options):
+            setAttr(key, "text", options)
 
-		setText("title", options)
-		setEnabled("legend", options)
-		setEnabled("labels", options)
-
-
-	def _addAxis(self, ax, options):
-		self._cleanOptions(options)
-		self.figure[ax] = options
+        setText("title", options)
+        setEnabled("legend", options)
+        setEnabled("labels", options)
 
 
-	def addXAxis(self, *args, **options):
-		self._addAxis("xAxis", options)
-		return self
+    def _addAxis(self, ax, options):
+        self._cleanOptions(options)
+        self.figure[ax] = options
 
 
-	def addYAxis(self, *args, **options):
-		self._addAxis("yAxis", options)
-		return self
+    def addXAxis(self, *args, **options):
+        self._addAxis("xAxis", options)
+        return self
 
 
-	def _updateAxis(self, ax, options):
-		self._cleanOptions(options)
-		self.figure[ax].update(options)
-
-	
-	def updateXAxis(self, **options):
-		self._updateAxis("xAxis", options)
-		return self
-
-	
-	def updateYAxis(self, **options):
-		self._updateAxis("yAxis", options)
-		return self
+    def addYAxis(self, *args, **options):
+        self._addAxis("yAxis", options)
+        return self
 
 
-	def addSeries(self, name, data, options):
-		series = { "name": name, "data": data }
-		series.update(options)
-		self.figure["series"].append(series)
-		return self
+    def _updateAxis(self, ax, options):
+        self._cleanOptions(options)
+        self.figure[ax].update(options)
+
+    
+    def updateXAxis(self, **options):
+        self._updateAxis("xAxis", options)
+        return self
+
+    
+    def updateYAxis(self, **options):
+        self._updateAxis("yAxis", options)
+        return self
+
+
+    def addSeries(self, name, data, options):
+        series = { "name": name, "data": data }
+        series.update(options)
+        self.figure["series"].append(series)
+        return self
+
+
+    @classmethod
+    def point(cls, names, values):
+        result = {}
+        for name, value in zip(names, values):
+            if name in ["x", "y", "color"]:
+                result[name] = value
+            elif name == "shape":
+                if result.get("marker") is None:
+                    result["marker"] = {}
+                result["marker"]["symbol"] = value
+            elif name == "size":
+                if result.get("marker") is None:
+                    result["marker"] = {}
+                result["marker"]["radius"] = value
+        return result

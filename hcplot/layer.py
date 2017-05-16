@@ -15,21 +15,23 @@
 
 class Layer(object):
     
-    def __init__(self, data, mapping, scaleY, position, dropNa, showLegend, **kwargs):
+    def __init__(self, data, mapping, scales, position, dropNa, showLegend, **kwargs):
         self.data = data
         self.mapping = mapping
-        self.scaleY = scaleY
+        self.scales = scales
         self.position = position
         self.dropNa = dropNa
         self.showLegend = showLegend
-        self.kwargs = kwargs
+        for k,v in kwargs.items():
+            setattr(self, k, v)
         
     def setFigure(self, figure):
         self.figure = figure
 
-        # TODO: Does this make sense?
-        # Inherit config from figure if not set explicitely in this layer
-        for attr in ["data", "mapping", "scaleY"]:
+        for attr in ["mapping", "scales"]:
             if getattr(self, attr) is None:
                 setattr(self, attr, getattr(figure, attr))
-        self.scaleX = figure.scaleX
+            else:
+                tmpAttr = getattr(figure, attr).copy()
+                tmpAttr.update(getattr(self, attr))
+                setattr(self, attr, tmpAttr)
