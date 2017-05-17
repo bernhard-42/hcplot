@@ -18,35 +18,28 @@ from ..components import Components
 
 class Points(Layer):
 
-    def __init__(self, data=None, mapping=None, scales=None, position=None, dropNa=False, showLegend=False, color=None, size=None, shape=None):
-        super(__class__, self).__init__(data, mapping, scales, position, dropNa, showLegend, color=color, size=size, shape=shape)
+    def __init__(self, *dataOrConfigs, 
+                 position=None, showLegend=False, color=None, size=None, shape=None):
+        super(__class__, self).__init__(dataOrConfigs, position, showLegend, color=color, size=size, shape=shape)
         self.options = { "type": "scatter", "marker": {"radius": 2 if size is None else size}}
 
         
     def prepareData(self, df, mx, my):
-        mapping = {"x":mx, "y":my}
-        for k,v in self.mapping.items():
-            if k not in ["x", "y"] and v is not None:
-                mapping[k] = v
-        names = list(mapping.keys())
-        cols = list(mapping.values())
-                
+        mapping = {"x":mx, "y":my}    
         if df.shape[0] > self.figure.performanceTreshold:
+            cols = list(mapping.values())
             df2 = df[cols]
-            return df2.to_dict("split")["data"]
+            result = df2.to_dict("split")["data"]
         else:
+            mapping.update(self.usePlotLevel)
+            names = list(mapping.keys())
+            cols = list(mapping.values())
             df2 = df[cols].copy()
             df2.columns = names
-
-            for attr in ["color", "shape", "size"]:
-                if attr in names:
-                    df2[attr] = df2[attr].astype('category')
-                    count = df2[attr].cat.categories.size
-                    df2[attr] = df2[attr].cat.rename_categories(self.scales[attr](count))
 
             data = df2.to_dict("split")["data"]
 
             result = [Components.point(names, values) for values in data]
 
-            return result
-        
+        return result
+

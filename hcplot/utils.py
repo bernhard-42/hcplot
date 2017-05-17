@@ -24,6 +24,13 @@ from IPython.display import HTML, Javascript, display
 from .scale import brewer, d3, shapes
 
 
+def update(d, defaults):
+    def2 = defaults.copy()
+    if d is not None:
+        def2.update(d)
+    return def2
+
+
 def loadLibraries():
     folder = os.path.dirname(__file__)
     
@@ -51,37 +58,37 @@ class ScipyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 
-def update(d, defaults):
-    def2 = defaults.copy()
-    if d is not None:
-        def2.update(d)
-    return def2
+class Config(object):
+    def __init__(self, param, config, **kwargs):
+        self.param = param
+        self.config = self._dropNone(config)
+        self.config.update(kwargs)
 
-# Mapping Helpers
+    def _dropNone(self, d):
+        return {k:v for k,v in d.items() if v is not None}
+
+# Mapping Helper
 
 def mapping(x, y=None, color=None, shape=None, size=None):
-    return {"x":x, "y":y, "color":color, "shape":shape, "size":size}
+    return Config("mapping", locals())
 
 
 # Layout Helpers
 
-def single():
-    return {"type":"single"}
-
-def grid(x, y, labels=True, scales="fixed", labelHeight=20):
-    return {"type":"grid", "x":x, "y":y, "scales":scales, "labels":labels, "labelHeight":labelHeight}
-
-def wrap(y, nrows=None, ncols=None, labels=True, scales="fixed", labelHeight=20):
-    return {"type":"wrap", "y":y, "nrows":nrows, "ncols":ncols, "scales":scales, "labels":labels, "labelHeight":labelHeight}
+def single(labels=True):
+    return Config("layout", locals(), type="single")
 
 def matrix(labels=True, scales="fixed", labelHeight=20):
-    return {"type":"matrix", "scales":scales, "labels":labels, "labelHeight":labelHeight}
+    return Config("layout", locals(), type="matrix")
+
+def grid(x, y, labels=True, scales="fixed", labelHeight=20):
+    return Config("layout", locals(), type="grid")
+
+def wrap(y, nrows=None, ncols=None, labels=True, scales="fixed", labelHeight=20):
+    return Config("layout", locals(), type="wrap")
 
 
 # Scales Helper
 
-def scales(color=brewer("qual", "Accent"),
-           fill=brewer("qual", "Accent"),
-           shape=shapes(),
-           size=None, area=None, lineType=None):
-    return {"color":color, "shape":shape, "size":size, "area":area, "lineType":lineType, "fill":fill}
+def scales(color=None, shape=None, size=None, area=None, lineType=None):
+    return Config("scales", locals())

@@ -72,6 +72,10 @@ HCplot(
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
+figure(data,      mapping,      scales=None, layout, coord )
+geom  (data=None, mapping=None, scales=None                )
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 coord.cartesian(xlim=None, ylim=None, expand=True)
 coord.fixed    (ratio=1, xlim=None, ylim=None, expand=True)

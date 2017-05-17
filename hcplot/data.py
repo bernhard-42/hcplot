@@ -34,14 +34,14 @@ class GroupedData(object):
         self.df = data.copy() if isinstance(data, pd.DataFrame) else pd.DataFrame(data)
         self.levels = {}
         
-        self.colLevels = self.rowLevels = []
+        self.colCategories = self.rowCategories = []
         
         if not self.noIndex:
             self.df, self.levels, self.colLevels, self.rowLevels = self._indexData()
-            self.colLevels, self.rowLevels = self._createLevels()
+            self.colCategories, self.rowCategories = self._createCategories()
 
-        self.colCount = len(self.colLevels)
-        self.rowCount = len(self.rowLevels)
+        self.colCount = len(self.colCategories)
+        self.rowCount = len(self.rowCategories)
 
         self.minMax = {}
     
@@ -56,7 +56,7 @@ class GroupedData(object):
         return df, levels, levels[:len(self.colDims)], levels[len(self.colDims):]
 
     
-    def _createLevels(self):
+    def _createCategories(self):
         result = []
         for levels in [self.colLevels, self.rowLevels]:
             if len(levels) == 1:
@@ -66,21 +66,21 @@ class GroupedData(object):
         return result
 
     
-    def _getLabels(self, dims, levels, func):
+    def _getLabels(self, dims, categories, func):
         if func is None:
             func = lambda k,v: "%s : %s" % (k,v)
         if len(dims) == 0:
             return []
         else:
-            return [[func(k,v) for k,v in zip(dims, val)] for val in levels]
+            return [[func(k,v) for k,v in zip(dims, val)] for val in categories]
 
         
     def getRowLabels(self, func=None):
-        return self._getLabels(self.rowDims, self.rowLevels, func)
+        return self._getLabels(self.rowDims, self.rowCategories, func)
 
     
     def getColLabels(self, func=None):
-        return self._getLabels(self.colDims, self.colLevels, func)
+        return self._getLabels(self.colDims, self.colCategories, func)
     
     
     def getShape(self):
@@ -93,20 +93,20 @@ class GroupedData(object):
         return self.minMax[col]
     
     
-    def getLevelsByIndex(self, colIndex, rowIndex=None):
-        levels = []
+    def getCategoriesByIndex(self, colIndex, rowIndex=None):
+        categories = []
         if colIndex is not None:
-            levels += self.colLevels[colIndex]
+            categories += self.colCategories[colIndex]
         if rowIndex is not None:
-            levels += self.rowLevels[rowIndex]            
-        return levels
+            categories += self.rowCategories[rowIndex]            
+        return categories
 
 
     def getDataByIndex(self, colIndex, rowIndex=None):
-        levels = self.getLevelsByIndex(colIndex, rowIndex)   
+        categories = self.getCategoriesByIndex(colIndex, rowIndex)   
         if self.noIndex:
             return self.df
         elif self.multiIndex:
-            return self.df.xs(levels, level=self.allDims)
+            return self.df.xs(categories, level=self.allDims)
         else:
-            return self.df.loc[levels[0]]
+            return self.df.loc[categories[0]]

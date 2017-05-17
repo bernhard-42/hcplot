@@ -15,6 +15,7 @@
 from .color import ColorBrewer, D3Colors
 from .shape import Shape
 
+
 def brewer(typ, palette):
     return lambda size: getattr(ColorBrewer, typ)(palette, size)
 
@@ -23,6 +24,9 @@ def d3(typ):
 
 def shapes():
     return Shape.get
+
+def defaultScale():
+	return {"color":brewer("qual", "Accent"), "shape": shapes()}
 
 
 # class Scale(object):

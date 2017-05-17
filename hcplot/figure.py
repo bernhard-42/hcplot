@@ -13,9 +13,8 @@
 # limitations under the License.
 
 from .data import GroupedData
-from .utils import ScipyEncoder, update
-from .utils import scales as defaultScales
-from .utils import single as defaultSingle
+from .utils import ScipyEncoder, update, Config
+from .scale import defaultScale
 from .components import Components
 from .templates import createGrid, createWrap
 
@@ -29,15 +28,38 @@ from operator import itemgetter
 
 class Figure(object):
     
-    def __init__(self, data, mapping, layout=None, scales=None, coord=None,
-                 width=1024, ratio=2/3, performanceTreshold=1000):
+    def __init__(self, data,                                          # DataFrame or ColumnDataSource
+                 *args,                                               # Config objects
+                 width=1024, ratio=2/3, performanceTreshold=1000):    # global attributes
+
         self.id = str(uuid4())
-        self.rawData = data
+        self.layer = 0
+        self.layers = []
+        
+        self.width = width
+        self.ratio = ratio
+        self.performanceTreshold = performanceTreshold
+       
+        # define all possible configs, ...
+        self.mapping = {}
+        self.layout  = {"type": "single", "labels": True}
+        self.scales  = defaultScale()
+        self.coord   = {} # TODO
+        
+        # ... get all provided configs ...
+        for arg in args:
+            assert isinstance(arg, Config), "Only Config objects allowed as positional arguments"
+            getattr(self, arg.param).update(arg.config)
 
-        self.mapping = mapping        
-        self.scales = update(scales, defaultScales())
-        self.layout = update(layout, defaultSingle())
+        assert self.mapping is not None, "Mapping Config (with at least x column) is missing"
 
+        self._indexData(data)
+        
+        self.coding = self.createPlotConfig(self.mapping, self.scales, self.layer)
+        self.usePlotLevel = {col:"%s._0" % col for col in self.mapping.keys() if col not in ["x", "y"]}
+
+    
+    def _indexData(self, data):
         layoutType = self.layout.get("type")
         
         if layoutType == "single":
@@ -66,8 +88,8 @@ class Figure(object):
                 self.cols = ncols
 
         elif layoutType == "grid":
-            assert  isinstance(self.mapping["x"], str), "'x' has to be a column name"
-            assert  isinstance(self.mapping["y"], str), "'y' has to be a column name"
+            assert  isinstance(self.mapping.get("x"), str), "'x' has to be a column name"
+            assert  isinstance(self.mapping.get("y"), str), "'y' has to be a column name"
 
             self.data = GroupedData(data, rowDims=self.layout.get("x"), colDims=self.layout.get("y"))
             self.rows = self.data.getShape()[0]
@@ -75,7 +97,7 @@ class Figure(object):
             self.count = self.rows * self.cols
 
         elif layoutType == "matrix":
-            if self.mapping["y"] is None:
+            if self.mapping.get("y") is None:
                 self.mapping["y"] = self.mapping["x"].copy()
                 self.mapping["y"].reverse()
                 
@@ -90,15 +112,20 @@ class Figure(object):
         else:
             raise ValueError("Unknow layout type %s", layoutType)
 
-        self.coord = coord
-        
-        self.width = width
-        self.ratio = ratio
-        self.performanceTreshold = performanceTreshold
-
-        self.layers = []
-
-
+    
+    def createPlotConfig(self, mapping, scales, layer):
+        coding = {}
+        for attr, name in mapping.items():
+            layerAttr = "%s._%d" % (attr, layer)
+            if name is not None and attr not in ["x", "y"] and scales.get(attr) is not None:
+                df = self.data.df
+                df[layerAttr] = df[name].astype("category")
+                count = df[layerAttr].cat.categories.size
+                newValues = scales[attr](count)
+                coding[attr] = zip(df[layerAttr].cat.categories, newValues)
+                df[layerAttr] = df[layerAttr].cat.rename_categories(newValues)
+        return coding
+    
     def __add__(self, layers):
         layers.setFigure(self)
         self.layers.append(layers)
