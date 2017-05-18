@@ -16,31 +16,23 @@ from .color import ColorBrewer, D3Colors
 from .shape import Shape
 
 
-def brewer(typ, palette):
-    return lambda size: getattr(ColorBrewer, typ)(palette, size)
+def brewer(typ, palette, discrete=True):
+    if typ == "qual":
+        return lambda size: getattr(ColorBrewer, typ)(palette, size=size)
+    else:
+        if discrete:
+            return lambda size: getattr(ColorBrewer, typ)(palette, True, size=size)
+        else:
+            return lambda array: getattr(ColorBrewer, typ)(palette, False, array=array)
+
 
 def d3(typ):
     return getattr(D3Colors, typ)
 
+
 def shapes():
     return Shape.get
 
+
 def defaultScale():
 	return {"color":brewer("qual", "Accent"), "shape": shapes()}
-
-
-# class Scale(object):
-    
-#     def __init__(self):
-#         pass
-
-
-# class Color(Scale):
-
-#     @classmethod
-#     def brewer(self, typ, palette):
-#         return lambda size: getattr(ColorBrewer, typ)(palette, size)
-
-#     @classmethod
-#     def d3(self, typ):
-#         return getattr(D3Colors, typ)
