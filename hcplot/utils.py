@@ -21,15 +21,6 @@ import pandas as pd
 
 from IPython.display import HTML, Javascript, display
 
-from .scale import brewer, d3, shapes
-
-
-def update(d, defaults):
-    def2 = defaults.copy()
-    if d is not None:
-        def2.update(d)
-    return def2
-
 
 def loadLibraries():
     folder = os.path.dirname(__file__)
@@ -41,6 +32,14 @@ def loadLibraries():
     with open(os.path.join(folder, "./js", "load.js"), "r") as fd:
         js = fd.read()
     display(Javascript(js))
+
+
+def update(d, defaults):
+    def2 = defaults.copy()
+    if d is not None:
+        def2.update(d)
+    return def2
+
 
 
 class ScipyEncoder(json.JSONEncoder):

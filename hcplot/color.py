@@ -1,25 +1,40 @@
 import math
 import numpy as np
-from scipy.interpolate import interp1d
+from scipy.interpolate import UnivariateSpline
+from .interpolate import spline
 
 
 class Color(object):
     
     @classmethod
-    def rgb2web(self, rgbs):
+    def rgb2web(cls, rgbs):
       conv = lambda c: "#%02x%02x%02x" % c
       if isinstance(rgbs[0], (list, tuple)):
         return [conv(rgb) for rgb in rgbs]
       else:
         return conv(rgbs)
     
+    
     @classmethod
-    def web2rgb(self, colors):
+    def web2rgb(cls, colors):
       conv = lambda c: (int(c[1:3], 16), int(c[3:5], 16), int(c[5:7], 16))
       if isinstance(colors, (list, tuple)):
         return [conv(color) for color in colors]
       else:
         return conv(colors)
+
+    
+    @classmethod
+    def rgbSpline(cls):
+        def f(colors):
+            r, g, b = [[c[i] for c in colors] for i in range(3)]    
+            f_r = spline(r)
+            f_g = spline(g)
+            f_b = spline(b)
+            
+            return lambda t: (int(f_r(t)), int(f_g(t)), int(f_b(t)))
+        return f
+
 
 
 class ColorBrewer(Color):
@@ -369,48 +384,47 @@ class ColorBrewer(Color):
 
 
     @classmethod
-    def _interpolate(self, scheme, color, array):
+    def _interpolate(cls, scheme, color, array):
         colors = scheme.get(color)[-1]
-        r, g, b = [[c[i] for c in colors] for i in range(3)]
-        x = np.linspace(  0,  1, len(r))
-        interpFunc = [interp1d(x, y) for y in [r,g,b]]
-        f = lambda x: tuple([round(interpFunc[i](x).item(0)) for i in range(3)])
+        f = cls.rgbSpline()(colors)
         return [f(a) for a in array]
- 
+        
 
     @classmethod
-    def _get(self, scheme, color, size):
-      colors = scheme.get(color)
-      if colors is None:
-        return []
-      elif size is None:
-        return colors
-      elif size < 3:
-        return colors[3][:size]
-      elif size < len(colors):
-        return colors[size]
-      else:
-        print("Warning: size too large for scheme, stacking largest color list to match size")
-        colors = colors[-1]
-        factor = math.ceil(size / (len(colors) - 3))
-        return (colors * factor)[:size]
+    def _get(cls, scheme, color, size):
+        colors = scheme.get(color)
+        if colors is None:
+            return []
+        elif size is None:
+            return colors
+        elif size == -1:
+            return colors[-1]
+        elif size < 3:
+            return colors[3][:size]
+        elif size < len(colors):
+            return colors[size]
+        else:
+            print("Warning: size too large for scheme, stacking largest color list to match size")
+            colors = colors[-1]
+            factor = math.ceil(size / (len(colors) - 3))
+            return (colors * factor)[:size]
 
     @classmethod
-    def div(self, color, discrete, size=None, array=None):
+    def div(cls, color, discrete, size=None, array=None):
         if discrete:
             return ColorBrewer._get(ColorBrewer.divScheme, color, size)
         else:
             return ColorBrewer._interpolate(ColorBrewer.divScheme, color, array)
 
     @classmethod
-    def seq(self, color, discrete, size=None, array=None):
+    def seq(cls, color, discrete, size=None, array=None):
         if discrete:
             return ColorBrewer._get(ColorBrewer.seqScheme, color, size)
         else:
             return ColorBrewer._interpolate(ColorBrewer.seqScheme, color, array)
 
     @classmethod
-    def qual(self, color, size=None):
+    def qual(cls, color, size=None):
       return ColorBrewer._get(ColorBrewer.qualScheme, color, size)
 
 

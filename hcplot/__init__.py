@@ -15,5 +15,6 @@
 from .utils import loadLibraries, mapping, single, grid, wrap, matrix, scales
 from .figure import Figure
 from .geoms.points import Points
+from .geoms.line import Line
 
 
