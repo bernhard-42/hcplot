@@ -20,45 +20,62 @@ from functools import reduce
 
 # TODO: Add Spark DataFrame
 
-class GroupedData(object):
+labelFomatter = lambda k,v: "%s : %s" % (k,v)
 
-    def __init__(self, data, colDims=[], rowDims=[]):
-        assert isinstance(data, (dict, pd.DataFrame)), "Data must be eiter ColumnDataList or a Pandas DataFrame"
-        
-        self.colDims = colDims
-        self.rowDims = rowDims
-        self.allDims = colDims + rowDims
-        self.multiIndex = len(self.allDims) > 1
-        self.noIndex = len(self.allDims) == 0
-        
+class Data(object):
+
+    def __init__(self, data):
         self.df = data.copy() if isinstance(data, pd.DataFrame) else pd.DataFrame(data)
-        self.levels = {}
-        
-        self.colCategories = self.rowCategories = []
-        
-        if not self.noIndex:
-            self.df, self.levels, self.colLevels, self.rowLevels = self._indexData()
-            self.colCategories, self.rowCategories = self._createCategories()
-
-        self.colCount = len(self.colCategories)
-        self.rowCount = len(self.rowCategories)
-
         self.minMax = {}
+        
+    def getData(self):
+        return self.df
+
+    def getMinMax(self, col):
+        if self.minMax.get(col) is None:
+            self.minMax[col] = (self.df[col].min(), self.df[col].max())
+        return self.minMax[col]
     
+
+class WrapData(Data):
+
+    def __init__(self, data, colDims):
+        assert isinstance(data, (dict, pd.DataFrame)), "Data must be eiter ColumnDataList or a Pandas DataFrame"
+        super(__class__, self).__init__(data)
+
+        self.colDims = colDims
+        self.colCategories = []
+
+        self._prepareData()
+
+
+    def _prepareData(self):
+        self.allDims = self.colDims
+
+        self.df, self.levels = self._indexData()
+        self.colLevels = self.levels
+
+        self.colCategories = self._createCategories([self.colLevels])[0]
+        self.colCount = len(self.colCategories)
+        self.rowCount = 0
+ 
     
     def _indexData(self):
+        self.multiIndex = len(self.allDims) > 1
         df = self.df.set_index(self.allDims)
         df.sortlevel(inplace=True)
+
         if self.multiIndex:
-            levels = [x.tolist() for x in df.index.unique().levels]
+            levels = [level.tolist() for level in df.index.unique().levels]
         else:
             levels = [sorted(df.index.unique().tolist())]
-        return df, levels, levels[:len(self.colDims)], levels[len(self.colDims):]
+
+        return df, levels
 
     
-    def _createCategories(self):
+    def _createCategories(self, allLevels):
         result = []
-        for levels in [self.colLevels, self.rowLevels]:
+        for levels in allLevels:
             if len(levels) == 1:
                 result.append([(l,) for l in levels[0]])
             else:
@@ -66,20 +83,11 @@ class GroupedData(object):
         return result
 
     
-    def _getLabels(self, dims, categories, func):
-        if func is None:
-            func = lambda k,v: "%s : %s" % (k,v)
-        if len(dims) == 0:
-            return []
-        else:
-            return [[func(k,v) for k,v in zip(dims, val)] for val in categories]
+    def _getLabels(self, dims, categories, func=labelFomatter):
+        return [[func(k,v) for k,v in zip(dims, val)] for val in categories]
 
         
-    def getRowLabels(self, func=None):
-        return self._getLabels(self.rowDims, self.rowCategories, func)
-
-    
-    def getColLabels(self, func=None):
+    def getColLabels(self, func=labelFomatter):
         return self._getLabels(self.colDims, self.colCategories, func)
     
     
@@ -87,26 +95,52 @@ class GroupedData(object):
         return (self.rowCount, self.colCount)
 
         
-    def getMinMax(self, col):
-        if self.minMax.get(col) is None:
-            self.minMax[col] = (self.df[col].min(), self.df[col].max())
-        return self.minMax[col]
-    
-    
-    def getCategoriesByIndex(self, colIndex, rowIndex=None):
-        categories = []
-        if colIndex is not None:
-            categories += self.colCategories[colIndex]
-        if rowIndex is not None:
-            categories += self.rowCategories[rowIndex]            
-        return categories
+    def getCategories(self, colIndex):
+        return self.colCategories[colIndex]
 
 
-    def getDataByIndex(self, colIndex, rowIndex=None):
-        categories = self.getCategoriesByIndex(colIndex, rowIndex)   
-        if self.noIndex:
-            return self.df
-        elif self.multiIndex:
+    def getData(self, colIndex):
+        categories = self.getCategories(colIndex)
+        if self.multiIndex:
+            return self.df.xs(categories, level=self.allDims)
+        else:
+            return self.df.loc[categories[0]]
+
+
+
+class GridData(WrapData):
+
+    def __init__(self, data, colDims, rowDims):
+        assert isinstance(data, (dict, pd.DataFrame)), "Data must be eiter ColumnDataList or a Pandas DataFrame"
+
+        self.rowDims = rowDims
+        self.rowCategories = []
+        super(__class__, self).__init__(data, colDims)
+
+    def _prepareData(self):
+        self.allDims = self.colDims + self.rowDims
+
+        self.df, self.levels = self._indexData()
+        self.colLevels = self.levels[:len(self.colDims)]
+        self.rowLevels = self.levels[len(self.colDims):]
+
+        self.colCategories, self.rowCategories = self._createCategories([self.colLevels, self.rowLevels])
+
+        self.colCount = len(self.colCategories)
+        self.rowCount = len(self.rowCategories)
+
+
+    def getRowLabels(self, func=labelFomatter):
+        return self._getLabels(self.rowDims, self.rowCategories, func)
+
+    
+    def getCategories(self, colIndex, rowIndex):
+        return self.colCategories[colIndex] + self.rowCategories[rowIndex]  
+
+
+    def getData(self, colIndex, rowIndex):
+        categories = self.getCategories(colIndex, rowIndex)   
+        if self.multiIndex:
             return self.df.xs(categories, level=self.allDims)
         else:
             return self.df.loc[categories[0]]
