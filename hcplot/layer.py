@@ -13,41 +13,48 @@
 # limitations under the License.
 
 import pandas as pd
-from .utils import Config
+from .data import Data
+from .utils import Config, update
+from .base import Base
 
 
-class Layer(object):
+class Layer(Base):
     
     def __init__(self, dataOrConfigs, position, showLegend, **kwargs):
 
         # define all possible configs, ...
-        self.df = None
-        self.mapping = None
-        self.scales = None
-        
-        
-        # ... get data and all provided configs ...
-        for dataOrConfig in dataOrConfigs:
-            if isinstance(dataOrConfig, pd.DataFrame):
-                self.df = dataOrConfig
-            else:
-                assert isinstance(dataOrConfig, Config), "Only Config objects allowed as positional arguments"
-                setattr(self, dataOrConfig.param, dataOrConfig.config)
-
+        self.mapping = {}
+        self.scales  = {}
+        self.data = self.parseArgs(dataOrConfigs)
+                
         self.position = position
         self.showLegend = showLegend
         for k,v in kwargs.items():
             setattr(self, k, v)
-        
+
     def setFigure(self, figure):
         self.figure = figure
         self.layer = 1 + figure.layer
-        self.usePlotLevel = figure.usePlotLevel
-        
-        if self.mapping is not None or self.scales is not None:
-            if self.mapping is None:
-                self.mapping = figure.mapping
+        self.usePlotLevel = figure.usePlotLevel.copy()
 
-            self.coding = figure.createPlotConfig(self.mapping, self.scales, self.layer)
+        # remember scales of this layer ...
+        scales = self.scales
+
+        # ... and merge mappings and config of the figure
+        self.mapping = update(self.mapping, figure.mapping)
+        self.scales  = update(self.scales, figure.scales)
+        
+        if self.data is None:
+            # apply changes of mapping, scales to global data
+            self.data = figure.data
+            if self.mapping != {} or scales != {}:
+                self.coding = self.createPlotConfig(self.mapping, scales, self.layer)
+                for k,v in self.coding.items():
+                    self.usePlotLevel[k] = "%s._%d" % (k, self.layer)
+        else:
+            self.data = Data(self.data)
+            # apply merged mapping and scales to local data
+            self.coding = self.createPlotConfig(self.mapping, self.scales, self.layer)
             for k,v in self.coding.items():
                 self.usePlotLevel[k] = "%s._%d" % (k, self.layer)
+            

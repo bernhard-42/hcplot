@@ -21,7 +21,10 @@ class Points(Layer):
     def __init__(self, *dataOrConfigs, 
                  position=None, showLegend=False, color=None, size=None, shape=None):
         super(__class__, self).__init__(dataOrConfigs, position, showLegend, color=color, size=size, shape=shape)
-        self.options = { "type": "scatter", "marker": {"radius": 2 if size is None else size}}
+        self.options = { "type": "scatter", "marker": {"radius": 3         if size  is None else size,
+                                                       "symbol": "diamond" if shape is None else shape}}
+        if color is not None:
+            self.options["color"] = color
 
         
     def prepareData(self, df, mx, my):
@@ -42,4 +45,3 @@ class Points(Layer):
             result = [Components.point(names, values) for values in data]
 
         return result
-

@@ -92,3 +92,9 @@ def wrap(y, nrows=None, ncols=None, labels=True, scales="fixed", labelHeight=20)
 
 def scales(color=None, shape=None, size=None, area=None, lineType=None):
     return Config("scales", locals())
+
+
+# Scales Helper
+
+def scales(color=None, shape=None, size=None, area=None, lineType=None):
+    return Config("scales", locals())

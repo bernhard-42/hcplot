@@ -32,6 +32,7 @@ def indent4(text):
     return indent(dedent(text), "    ")
 
 
+
 def createGrid(containerId, width, ratio, rows, cols, rowLabels=[], colLabels=[], 
                labelHeight=20, allXAxisLabels=False, allYAxisLabels=False):
     
@@ -142,4 +143,3 @@ def createWrap(containerId, width, ratio, rows, cols, count, colLabels=[],
     html += "</table>\n"
  
     return html
-
