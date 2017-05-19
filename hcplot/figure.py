@@ -14,7 +14,9 @@
 
 from .data import Data, WrapData, GridData
 from .base import Base
-from .utils import ScipyEncoder, update, Config
+from .utils.json import ScipyEncoder
+from .utils.helpers import update
+from .utils.config import Config
 from .scale import defaultScale
 from .components import Components
 from .templates import createGrid, createWrap
@@ -57,7 +59,10 @@ class Figure(Base):
             self._indexData(data)
         
             self.coding = self.createPlotConfig(self.mapping, self.scales, self.layer)
-            self.usePlotLevel = {col:"%s._0" % col for col in self.mapping.keys() if col not in ["x", "y"]}
+            self.usePlotLevel = {}
+            for k,v in self.coding.items():
+                if k not in ["x", "y"]:
+                    self.usePlotLevel[k] = v if isinstance(v, str) else "%s._0" % k
 
     
     def _indexData(self, data):

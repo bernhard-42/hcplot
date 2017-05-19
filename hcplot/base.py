@@ -14,7 +14,7 @@
 
 import pandas as pd
 from .scale import defaultScale
-from .utils import Config
+from .utils.config import Config
 from .color import Color
 
 class Base(object):
@@ -67,13 +67,16 @@ class Base(object):
             layerAttr = "%s._%d" % (attr, layer)
             
             if name is not None and attr not in ["x", "y"] and scales.get(attr) is not None:
-                df = self.data.df
-                df[layerAttr] = df[name].astype("category")
-                count = df[layerAttr].cat.categories.size
-                newValues = scales[attr](count)
-                if attr == "color":
-                    newValues = Color.rgb2web(newValues)
-                coding[attr] = zip(df[layerAttr].cat.categories, newValues)
-                df[layerAttr] = df[layerAttr].cat.rename_categories(newValues)
+                if scales[attr] == 1:
+                    coding[attr] = name
+                else:
+                    df = self.data.df
+                    df[layerAttr] = df[name].astype("category")
+                    count = df[layerAttr].cat.categories.size
+                    newValues = scales[attr](count)
+                    if attr == "color":
+                        newValues = Color.rgb2web(newValues)
+                    coding[attr] = zip(df[layerAttr].cat.categories, newValues)
+                    df[layerAttr] = df[layerAttr].cat.rename_categories(newValues)
 
         return coding

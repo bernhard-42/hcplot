@@ -36,3 +36,7 @@ def shapes():
 
 def defaultScale():
 	return {"color":brewer("qual", "Accent"), "shape": shapes()}
+
+
+def identity():
+    return 1

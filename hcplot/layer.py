@@ -14,7 +14,8 @@
 
 import pandas as pd
 from .data import Data
-from .utils import Config, update
+from .utils.config import Config
+from .utils.helpers import update
 from .base import Base
 
 
@@ -50,11 +51,11 @@ class Layer(Base):
             if self.mapping != {} or scales != {}:
                 self.coding = self.createPlotConfig(self.mapping, scales, self.layer)
                 for k,v in self.coding.items():
-                    self.usePlotLevel[k] = "%s._%d" % (k, self.layer)
+                    self.usePlotLevel[k] = v if isinstance(v, str) else "%s._%d" % (k, self.layer)
         else:
             self.data = Data(self.data)
             # apply merged mapping and scales to local data
             self.coding = self.createPlotConfig(self.mapping, self.scales, self.layer)
             for k,v in self.coding.items():
-                self.usePlotLevel[k] = "%s._%d" % (k, self.layer)
+                self.usePlotLevel[k] = v if isinstance(v, str) else "%s._%d" % (k, self.layer)
             
