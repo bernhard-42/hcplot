@@ -12,11 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .utils.helpers import loadLibraries
-from .utils.config import mapping, single, grid, wrap, matrix, scales
-from .scale import identity
-from .figure import Figure
-from .geoms.points import Points
-from .geoms.line import Line
+import os
+from IPython.display import HTML, Javascript, display
 
 
+def loadLibraries():
+    folder = os.path.dirname(__file__)
+    
+    with open(os.path.join(folder, "../css", "styles.css"), "r") as fd:
+        css = fd.read()
+    display(HTML("<style>%s</style>" % css))
+ 
+    with open(os.path.join(folder, "../js", "load.js"), "r") as fd:
+        js = fd.read()
+    display(Javascript(js))
+
+
+def update(d, defaults):
+    def2 = defaults.copy()
+    if d is not None:
+        def2.update(d)
+    return def2

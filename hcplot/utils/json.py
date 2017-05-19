@@ -12,11 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .utils.helpers import loadLibraries
-from .utils.config import mapping, single, grid, wrap, matrix, scales
-from .scale import identity
-from .figure import Figure
-from .geoms.points import Points
-from .geoms.line import Line
+import json
+import datetime
+import pandas as pd
+import numpy as np
 
+
+class ScipyEncoder(json.JSONEncoder):
+    def default(self, o):
+
+        if isinstance(o, pd.tslib.Timestamp):
+            o = o.to_pydatetime()
+            
+        if isinstance(o, datetime.datetime):
+            return int(o.timestamp() * 1000)
+        
+        if isinstance(o, np.generic):
+            return np.asscalar(o)
+        
+        return json.JSONEncoder.default(self, o)
 
