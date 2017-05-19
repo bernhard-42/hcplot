@@ -6,7 +6,7 @@ def read(fname):
 
 setup(
     name = "hcplot",
-    version = "0.2.0",
+    version = "0.3.0",
     author = "Bernhard Walter",
     author_email = "bwalter@gmail.com",
     description = ("ggplot with highcharts iun a python'ish way"),
