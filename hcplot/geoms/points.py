@@ -14,21 +14,37 @@
 
 from ..layer import Layer
 from ..components import Components
+from ..color import Color
 
 
 class Points(Layer):
 
-    def __init__(self, *dataOrConfigs, 
-                 position=None, showLegend=False, color=None, size=None, shape=None):
-        super(__class__, self).__init__(dataOrConfigs, position, showLegend, color=color, size=size, shape=shape)
-        self.options = { "type": "scatter", "marker": {"radius": 3         if size  is None else size,
-                                                       "symbol": "diamond" if shape is None else shape}}
-        if color is not None:
-            self.options["color"] = color
+    def __init__(self, *dataOrConfigs,
+                 position=None, showLegend=False, color="#7cb5ec", alpha=None,
+                 lineWidth=0, lineColor=None, size=None, shape=None):
 
-        
+        super(__class__, self).__init__(dataOrConfigs, position, showLegend,        # noqa F821
+                                        color=color, alpha=alpha,
+                                        lineWidth=0, lineColor=None, size=size, shape=shape)
+
+        self.options = {"type": "scatter",
+                        "marker": {"radius": 3 if size is None else size,
+                                   "symbol": "diamond" if shape is None else shape}}
+
+        rgba = Color.web2rgba(color)
+        if alpha is not None:
+            rgba = rgba[:3] + (alpha,)
+
+        self.options["color"] = Color.rgba2web(rgba)
+
+        if lineWidth > 0:
+            self.options["marker"]["lineWidth"] = lineWidth
+
+        if lineColor is not None:
+            self.options["marker"]["lineColor"] = lineColor
+
     def prepareData(self, df, mx, my):
-        mapping = {"x":mx, "y":my}    
+        mapping = {"x": mx, "y": my}
         if df.shape[0] > self.figure.performanceTreshold:
             cols = list(mapping.values())
             df2 = df[cols]

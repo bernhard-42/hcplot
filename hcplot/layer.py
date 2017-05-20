@@ -12,25 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pandas as pd
 from .data import Data
-from .utils.config import Config
 from .utils.helpers import update
 from .base import Base
 
 
 class Layer(Base):
-    
+
     def __init__(self, dataOrConfigs, position, showLegend, **kwargs):
 
         # define all possible configs, ...
         self.mapping = {}
-        self.scales  = {}
+        self.scales = {}
         self.data = self.parseArgs(dataOrConfigs)
-                
+
         self.position = position
         self.showLegend = showLegend
-        for k,v in kwargs.items():
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
     def setFigure(self, figure):
@@ -43,19 +41,18 @@ class Layer(Base):
 
         # ... and merge mappings and config of the figure
         self.mapping = update(self.mapping, figure.mapping)
-        self.scales  = update(self.scales, figure.scales)
-        
+        self.scales = update(self.scales,  figure.scales)
+
         if self.data is None:
             # apply changes of mapping, scales to global data
             self.data = figure.data
             if self.mapping != {} or scales != {}:
                 self.coding = self.createPlotConfig(self.mapping, scales, self.layer)
-                for k,v in self.coding.items():
+                for k, v in self.coding.items():
                     self.usePlotLevel[k] = v if isinstance(v, str) else "%s._%d" % (k, self.layer)
         else:
             self.data = Data(self.data)
             # apply merged mapping and scales to local data
             self.coding = self.createPlotConfig(self.mapping, self.scales, self.layer)
-            for k,v in self.coding.items():
+            for k, v in self.coding.items():
                 self.usePlotLevel[k] = v if isinstance(v, str) else "%s._%d" % (k, self.layer)
-            

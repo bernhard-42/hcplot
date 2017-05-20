@@ -12,11 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .utils.helpers import loadLibraries
-from .utils.config import mapping, single, grid, wrap, matrix, scales
-from .scale import identity
-from .figure import Figure
-from .geoms.points import Points
-from .geoms.line import Line
 
+from .utils.helpers import loadLibraries                                   # noqa F401
+from .utils.config import mapping, single, grid, wrap, matrix, scales      # noqa F401
+from .scale import identity                                                # noqa F401
+from .figure import Figure                                                 # noqa F401
+from .geoms.points import Points                                           # noqa F401
+from .geoms.line import Line                                               # noqa F401
 
+msg = """
+- Highsoft software products (www.highcharts.com) are not free for commercial and Governmental use.
+  Conditions vor Non-commercial use see https://shop.highsoft.com/faq#Non-Commercial-0
+
+- This product includes color specifications and designs developed by Cynthia Brewer
+  ( http://colorbrewer.org ).
+
+- D3 category colors and the interpolateRGB algorithm have been taken over from https://d3js.org/,
+  Copyright 2010-2017 Mike Bostock
+"""
+print(msg)

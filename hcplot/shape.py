@@ -14,8 +14,9 @@
 
 import math
 
+
 class Shape(object):
-    shapes = [ "circle", "triangle", "triangle-down", "diamond", "square" ]
+    shapes = ["circle", "triangle", "triangle-down", "diamond", "square"]
 
     @classmethod
     def get(cls, size):

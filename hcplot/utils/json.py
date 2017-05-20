@@ -23,12 +23,11 @@ class ScipyEncoder(json.JSONEncoder):
 
         if isinstance(o, pd.tslib.Timestamp):
             o = o.to_pydatetime()
-            
+
         if isinstance(o, datetime.datetime):
             return int(o.timestamp() * 1000)
-        
+
         if isinstance(o, np.generic):
             return np.asscalar(o)
-        
-        return json.JSONEncoder.default(self, o)
 
+        return json.JSONEncoder.default(self, o)

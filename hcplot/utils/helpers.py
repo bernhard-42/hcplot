@@ -18,11 +18,11 @@ from IPython.display import HTML, Javascript, display
 
 def loadLibraries():
     folder = os.path.dirname(__file__)
-    
+
     with open(os.path.join(folder, "../css", "styles.css"), "r") as fd:
         css = fd.read()
     display(HTML("<style>%s</style>" % css))
- 
+
     with open(os.path.join(folder, "../js", "load.js"), "r") as fd:
         js = fd.read()
     display(Javascript(js))

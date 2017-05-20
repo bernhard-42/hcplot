@@ -20,7 +20,7 @@ class Config(object):
         self.config.update(kwargs)
 
     def _dropNone(self, d):
-        return {k:v for k,v in d.items() if v is not None}
+        return {k: v for k, v in d.items() if v is not None}
 
 
 # Mapping Helper
@@ -34,20 +34,17 @@ def mapping(x, y=None, color=None, shape=None, size=None):
 def single(labels=True):
     return Config("layout", locals(), type="single")
 
+
 def matrix(labels=True, scales="fixed", labelHeight=20):
     return Config("layout", locals(), type="matrix")
+
 
 def grid(x, y, labels=True, scales="fixed", labelHeight=20):
     return Config("layout", locals(), type="grid")
 
+
 def wrap(y, nrows=None, ncols=None, labels=True, scales="fixed", labelHeight=20):
     return Config("layout", locals(), type="wrap")
-
-
-# Scales Helper
-
-def scales(color=None, shape=None, size=None, area=None, lineType=None):
-    return Config("scales", locals())
 
 
 # Scales Helper

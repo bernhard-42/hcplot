@@ -68,12 +68,22 @@ HCplot(
 <LAMBDA_FUNC>   = lambda x: <FUNC>(x)
 
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
+alpha = Alpha(discrete)                | identity() | manual(...)
+color = Brewer(typ, palette, discrete) | identity() | manual(...)
+color = Gradient(typ=0,2,n)            | identity() | manual(...)
+color = Grey(discrete)                 | identity() | manual(...)
+color = Hue(discrete)                  | identity() | manual(...)
+size  = Size(discrete)                 | identity() | manual(...)
+shape = Shape(discrete)                | identity() | manual(...)
+x     = X(discrete,log10, sqrt, reverse, date, time, datetime)
+y     = Y(discrete,log10, sqrt, reverse, date, time, datetime)
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-figure(data,      mapping,      scales=None, layout, coord )
-geom  (data=None, mapping=None, scales=None                )
+figure (data=None, mapping=None, scales=None, layout, coord )
+<layer>(data=None, mapping=None, scales=None                )
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 

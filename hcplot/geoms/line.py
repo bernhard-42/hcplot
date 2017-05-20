@@ -15,21 +15,23 @@
 
 from ..layer import Layer
 
+
 class Line(Layer):
 
-    def __init__(self, *dataOrConfigs, 
-                 position=None, showLegend=False, color=None, lineType="Solid", lineWidth=2, showMarker=None, marker="diamond"):
-        super(__class__, self).__init__(dataOrConfigs, position, showLegend, color=color, lineType=lineType, showMarker=showMarker, marker=marker)
-        self.options = { "type": "line", "dashStyle": lineType, "lineWidth": lineWidth } 
-        
+    def __init__(self, *dataOrConfigs, position=None, showLegend=False, color=None,
+                 lineType="Solid", lineWidth=2, showMarker=None, marker="diamond"):
+
+        super(__class__, self).__init__(dataOrConfigs, position, showLegend, color=color,        # noqa F821
+                                        lineType=lineType, showMarker=showMarker, marker=marker)
+        self.options = {"type": "line", "dashStyle": lineType, "lineWidth": lineWidth}
+
         if color is not None:
             self.options["color"] = color
 
-        self.options["marker"] = { "symbol": marker }
+        self.options["marker"] = {"symbol": marker}
 
         if showMarker is not None:
             self.options["marker"]["enabled"] = showMarker
 
-        
-    def prepareData(self, df, mx, my):
+    def _prepareData(self, df, mx, my):
         return df[[mx, my]].to_dict("split")["data"]
