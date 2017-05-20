@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from .color import ColorBrewer, D3Colors
-# from .shape import Shape
+from .shape import Shape as ShapeClass
 import numpy as np
 
 
@@ -131,7 +131,7 @@ class Y(object):
 
 
 def shapes():
-    return Shape.get
+    return ShapeClass.get
 
 
 def defaultScale():

@@ -33,5 +33,5 @@ class Line(Layer):
         if showMarker is not None:
             self.options["marker"]["enabled"] = showMarker
 
-    def _prepareData(self, df, mx, my):
+    def prepareData(self, df, mx, my):
         return df[[mx, my]].to_dict("split")["data"]

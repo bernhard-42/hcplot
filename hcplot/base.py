@@ -15,7 +15,7 @@
 import pandas as pd
 from .utils.config import Config
 from .color import Color
-from operators import itemgetter
+from operator import itemgetter
 
 
 class Base(object):
@@ -72,12 +72,18 @@ class Base(object):
                     df = self.data.df
                     df[layerAttr] = df[name].astype("category")
                     count = df[layerAttr].cat.categories.size
+                    attrFunc = scales[attr].get()
                     if scales[attr].discrete:
-                        newValues = scales[attr].get(count)
+                        newValues = attrFunc(count)
                         if attr == "color":
                             newValues = Color.rgb2str(newValues)
                         coding[attr] = zip(df[layerAttr].cat.categories, newValues)
                         df[layerAttr] = df[layerAttr].cat.rename_categories(newValues)
                     else:
-                        print("not implemnted yet")
+                        newValues = attrFunc(df[name])
+                        if attr == "color":
+                            newValues = Color.rgb2str(newValues)
+                        df[layerAttr] = newValues
+                        coding[attr] = attrFunc
+
         return coding
