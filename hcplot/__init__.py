@@ -14,18 +14,18 @@
 
 
 from .utils.helpers import loadLibraries                                   # noqa F401
-from .utils.config import mapping, single, grid, wrap, matrix, scales      # noqa F401
-from .scale import identity                                                # noqa F401
+from .config import mapping, single, grid, wrap, matrix, scale             # noqa F401
+from .scales.scale import identity                                         # noqa F401
 from .figure import Figure                                                 # noqa F401
 from .geoms.points import Points                                           # noqa F401
 from .geoms.line import Line                                               # noqa F401
 
 msg = """
 - Highsoft software products (www.highcharts.com) are not free for commercial and Governmental use.
-  Conditions vor Non-commercial use see https://shop.highsoft.com/faq#Non-Commercial-0
+  (see https://shop.highsoft.com/faq#Non-Commercial-0 for conditions for Non-commercial use).
 
 - This product includes color specifications and designs developed by Cynthia Brewer
-  ( http://colorbrewer.org ).
+  http://colorbrewer.org
 
 - D3 category colors and the interpolateRGB algorithm have been taken over from https://d3js.org/,
   Copyright 2010-2017 Mike Bostock

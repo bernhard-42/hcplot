@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import pandas as pd
-from .utils.config import Config
-from .color import Color
+from .config import Config
+from .utils.color import rgb2str
 from operator import itemgetter
 
 
@@ -72,18 +72,18 @@ class Base(object):
                     df = self.data.df
                     df[layerAttr] = df[name].astype("category")
                     count = df[layerAttr].cat.categories.size
-                    attrFunc = scales[attr].get()
+                    scaleFunc = scales[attr].get()
                     if scales[attr].discrete:
-                        newValues = attrFunc(count)
+                        newValues = scaleFunc(count)
                         if attr == "color":
-                            newValues = Color.rgb2str(newValues)
+                            newValues = rgb2str(newValues)
                         coding[attr] = zip(df[layerAttr].cat.categories, newValues)
                         df[layerAttr] = df[layerAttr].cat.rename_categories(newValues)
                     else:
-                        newValues = attrFunc(df[name])
+                        newValues = scaleFunc(df[name])
                         if attr == "color":
-                            newValues = Color.rgb2str(newValues)
+                            newValues = rgb2str(newValues)
                         df[layerAttr] = newValues
-                        coding[attr] = attrFunc
+                        coding[attr] = scaleFunc
 
         return coding

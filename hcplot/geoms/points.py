@@ -13,8 +13,8 @@
 # limitations under the License.
 
 from ..layer import Layer
-from ..components import Components
-from ..color import Color
+from ..components import point
+from ..utils.color import web2rgba, rgba2web
 
 
 class Points(Layer):
@@ -31,11 +31,11 @@ class Points(Layer):
                         "marker": {"radius": 3 if size is None else size,
                                    "symbol": "diamond" if shape is None else shape}}
 
-        rgba = Color.web2rgba(color)
+        rgba = web2rgba(color)
         if alpha is not None:
             rgba = rgba[:3] + (alpha,)
 
-        self.options["color"] = Color.rgba2web(rgba)
+        self.options["color"] = rgba2web(rgba)
 
         if lineWidth > 0:
             self.options["marker"]["lineWidth"] = lineWidth
@@ -58,6 +58,6 @@ class Points(Layer):
 
             data = df2.to_dict("split")["data"]
 
-            result = [Components.point(names, values) for values in data]
+            result = [point(names, values, self.alpha) for values in data]
 
         return result

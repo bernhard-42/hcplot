@@ -15,7 +15,7 @@
 from .data import Data, WrapData, GridData
 from .base import Base
 from .utils.json import ScipyEncoder
-from .scale import defaultScale
+from .scales.scale import defaultScale
 from .components import Components
 from .templates import createGrid, createWrap
 

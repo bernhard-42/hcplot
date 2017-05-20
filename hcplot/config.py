@@ -25,7 +25,7 @@ class Config(object):
 
 # Mapping Helper
 
-def mapping(x, y=None, color=None, shape=None, size=None):
+def mapping(x, y=None, color=None, alpha=None, shape=None, size=None):
     return Config("mapping", locals())
 
 
@@ -49,5 +49,5 @@ def wrap(y, nrows=None, ncols=None, labels=True, scales="fixed", labelHeight=20)
 
 # Scales Helper
 
-def scales(color=None, shape=None, size=None, area=None, lineType=None):
+def scale(color=None, alpha=None, shape=None, size=None, area=None, lineType=None):
     return Config("scales", locals())

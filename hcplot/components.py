@@ -90,31 +90,32 @@ class Components(object):
         self.figure["series"].append(series)
         return self
 
-    @classmethod
-    def point(cls, names, values):
-        result = {}
-        alpha = None
-        for name, value in zip(names, values):
-            if name in ["x", "y", "color"]:
-                result[name] = value
 
-            elif name == "alpha":
-                alpha = value
+def point(names, values, globalAlpha=None):
+    result = {}
+    alpha = None
+    for name, value in zip(names, values):
+        if name in ["x", "y", "color"]:
+            result[name] = value
 
-            elif name == "shape":
-                if result.get("marker") is None:
-                    result["marker"] = {}
-                result["marker"]["symbol"] = value
+        elif name == "alpha":
+            alpha = value
 
-            elif name == "size":
-                if result.get("marker") is None:
-                    result["marker"] = {}
-                result["marker"]["radius"] = value
+        elif name == "shape":
+            if result.get("marker") is None:
+                result["marker"] = {}
+            result["marker"]["symbol"] = value
 
-        if result.get("color") is not None:
-            if alpha is None:
-                result["color"] = "rgb(%s)" % result["color"]
-            else:
-                result["color"] = "rgba($s,%f)" % (result["color"], alpha)
+        elif name == "size":
+            if result.get("marker") is None:
+                result["marker"] = {}
+            result["marker"]["radius"] = value
 
-        return result
+    if result.get("color") is not None:
+        if alpha is None and globalAlpha is None:
+            result["color"] = "rgb(%s)" % result["color"]
+        else:
+            alpha = globalAlpha if alpha is None else alpha
+            result["color"] = "rgba(%s,%f)" % (result["color"], alpha)
+
+    return result
