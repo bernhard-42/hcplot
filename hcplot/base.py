@@ -14,7 +14,7 @@
 
 import pandas as pd
 from .config import Config
-from .utils.color import rgb2str
+from .scales.scale import identity
 from operator import itemgetter
 
 
@@ -65,25 +65,21 @@ class Base(object):
         for attr, name in mapping.items():
             layerAttr = "%s._%d" % (attr, layer)
 
-            if name is not None and attr not in ["x", "y"] and scales.get(attr) is not None:
-                if scales[attr] == 1:
+            if name is not None and scales.get(attr) is not None:
+                if scales[attr] == identity():
                     coding[attr] = name
                 else:
                     df = self.data.df
-                    df[layerAttr] = df[name].astype("category")
-                    count = df[layerAttr].cat.categories.size
-                    scaleFunc = scales[attr].get()
+                    scaleFunc = scales[attr]
+
                     if scales[attr].discrete:
+                        df[layerAttr] = df[name].astype("category")
+                        count = df[layerAttr].cat.categories.size
                         newValues = scaleFunc(count)
-                        if attr == "color":
-                            newValues = rgb2str(newValues)
                         coding[attr] = zip(df[layerAttr].cat.categories, newValues)
                         df[layerAttr] = df[layerAttr].cat.rename_categories(newValues)
                     else:
-                        newValues = scaleFunc(df[name])
-                        if attr == "color":
-                            newValues = rgb2str(newValues)
-                        df[layerAttr] = newValues
+                        df[layerAttr] = scaleFunc(df[name])
                         coding[attr] = scaleFunc
 
         return coding

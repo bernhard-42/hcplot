@@ -14,7 +14,9 @@
 
 
 import math
-from ...utils.color import rgbSpline
+from sklearn.preprocessing import MinMaxScaler
+from ...utils.color import rgbSpline, rgb2str
+from ...utils.helpers import reshape
 
 
 class ColorBrewer(object):
@@ -370,24 +372,19 @@ class ColorBrewer(object):
     #
 
     @classmethod
-    def _interpolate(cls, scheme, color, array):
-        mina = min(array)
-        d = max(array) - mina
-        if d == 0:
-            return scheme.get(color)[3][:1] * len(array)
-        else:
-            scaledArray = [(a - mina) / d for a in array]
-            colors = scheme.get(color)[-1]
-            f = rgbSpline()(colors)
-            return [f(a) for a in scaledArray]
+    def _interpolate(cls, scheme, palette, series):
+        colors = scheme.get(palette)[-1]
+        f = rgbSpline()(colors)
+        scaledSeries = MinMaxScaler([0.0, 1.0]).fit_transform(reshape(series))
+        return [f(a) for a in scaledSeries]
 
     #
     # Get discrete results
     #
 
     @classmethod
-    def _get(cls, scheme, color, size):
-        colors = scheme.get(color)
+    def _get(cls, scheme, palette, size):
+        colors = scheme.get(palette)
         if colors is None:
             return []
         elif size is None:
@@ -407,25 +404,40 @@ class ColorBrewer(object):
     #
     # Accessors
     #
-    
-    @classmethod
-    def div(cls, color, discrete=True, size=None, array=None):
-        if discrete:
-            return cls._get(cls.divScheme, color, size)
-        else:
-            return cls._interpolate(cls.divScheme, color, array)
 
     @classmethod
-    def seq(cls, color, discrete=True, size=None, array=None):
-        if discrete:
-            return cls._get(cls.seqScheme, color, size)
+    def div(cls, palette, sizeOrSeries, asString=False):
+        if isinstance(sizeOrSeries, int):
+            result = cls._get(cls.divScheme, palette, size=sizeOrSeries)
         else:
-            return cls._interpolate(cls.seqScheme, color, array)
+            result = cls._interpolate(cls.divScheme, palette, series=sizeOrSeries)
+        return rgb2str(result) if asString else result
 
     @classmethod
-    def qual(cls, color, discrete=True, size=None):
-        assert discrete, "Qualitative palette cannot be used for non-discrete data"
-        return cls._get(cls.qualScheme, color, size)
+    def seq(cls, palette, sizeOrSeries, asString=False):
+        if isinstance(sizeOrSeries, int):
+            result = cls._get(cls.seqScheme, palette, size=sizeOrSeries)
+        else:
+            result = cls._interpolate(cls.seqScheme, palette, series=sizeOrSeries)
+        return rgb2str(result) if asString else result
+
+    @classmethod
+    def qual(cls, palette, sizeOrSeries, asString=False):
+        assert isinstance(sizeOrSeries, int), "Qualitative palette cannot be used for non-discrete data"
+        result = cls._get(cls.qualScheme, palette, size=sizeOrSeries)
+        return rgb2str(result) if asString else result
+
+    #
+    # Info
+    #
+
+    @classmethod
+    def info(cls):
+        return {
+            "div": (list(cls.divScheme.keys())),
+            "qual": (list(cls.qualScheme.keys())),
+            "seq": (list(cls.seqScheme.keys()))
+        }
 
 
 #

@@ -19,40 +19,62 @@ from .shape import Shape as ShapeClass
 from .alpha import Alpha as AlphaClass
 
 
-class Alpha(object):
+class Scale(object):
+
+    def _accessor(self, cls, accessor, kwargs):
+        self.method = getattr(cls, accessor)
+        self.kwargs = kwargs
+
+    def __call__(self, sizeOrSeries):
+        return self.method(**self.kwargs, sizeOrSeries=sizeOrSeries)
+
+
+class Alpha(Scale):
 
     def __init__(self, discrete=True):
         self.discrete = discrete
-
-    def get(self):
-        if self.discrete:
-            return lambda size: AlphaClass.alpha(size=size)
-        else:
-            return lambda array: AlphaClass.alpha(discrete=False, array=array)
+        self._accessor(AlphaClass, "alpha", {})
 
 
-class D3(object):
+class D3(Scale):
 
-    def __init__(self, typ):
+    def __init__(self, typ, asString=True):
         self.discrete = True
-        self.typ = typ
+        self._accessor(D3Colors, typ, {"asString": asString})
 
-    def get(self):
-        return getattr(D3Colors, self.typ)
+    @classmethod
+    def info(cls):
+        return D3Colors.info()
 
 
-class Brewer(object):
+class Brewer(Scale):
 
-    def __init__(self, typ, palette, discrete=True):
-        self.typ = typ
-        self.palette = palette
+    def __init__(self, typ, palette, discrete=True, asString=True):
         self.discrete = discrete
+        self._accessor(ColorBrewer, typ, {"palette": palette, "asString": asString})
 
-    def get(self):
-        if self.discrete:
-            return lambda size: getattr(ColorBrewer, self.typ)(self.palette, size=size)
-        else:
-            return lambda array: getattr(ColorBrewer, self.typ)(self.palette, discrete=False, array=array)
+    @classmethod
+    def info(cls):
+        return ColorBrewer.info()
+
+
+class Shape(Scale):
+
+    def __init__(self):
+        self.discrete = True
+        self._accessor(ShapeClass, "shape", {})
+
+    @classmethod
+    def info(cls):
+        return ShapeClass.info()
+
+
+
+
+
+
+
+
 
 
 class Gradient(object):
@@ -106,14 +128,6 @@ class Size(object):
         #         return None
         #     return lambda array: conv(array)
 
-
-class Shape(object):
-
-    def __init__(self):
-        self.discrete = True
-
-    def get(self):
-        return lambda size: ShapeClass.shape(size=size)
 
 
 class X(object):

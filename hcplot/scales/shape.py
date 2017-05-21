@@ -35,8 +35,16 @@ class Shape(object):
     #
 
     @classmethod
-    def shape(cls, size):
-        return cls._get(size)
+    def shape(cls, sizeOrSeries):
+        return cls._get(size=sizeOrSeries)
+
+    #
+    # Info
+    #
+
+    @classmethod
+    def info(cls):
+        return cls.shapes
 
 
 #

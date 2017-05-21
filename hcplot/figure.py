@@ -233,11 +233,11 @@ class Figure(Base):
                 container = "hc_%s_%d-%d" % (self.id, row, col)
                 if isEmpty and xScaleFree and yScaleFree:
                     html += dedent("""
-                    //      console.log("%d-%d")
+                    //      Chart %d-%d (empty)
                     """) % (row, col)
                 else:
                     html += dedent("""
-                    //      console.log("%d-%d")
+                    //      Chart %d-%d
                             HC.chart("%s", %s);
                     """) % (row, col, container, json.dumps(fig.get(), cls=ScipyEncoder))
 

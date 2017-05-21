@@ -14,6 +14,8 @@
 
 
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from ..utils.helpers import reshape
 
 
 class Alpha(object):
@@ -23,38 +25,27 @@ class Alpha(object):
     #
 
     @classmethod
-    def _interpolate(self, array):
-        if len(array) == 0:
-            return []
-
-        mina = min(array)
-        d = max(array) - mina
-        if d == 0:
-            return [0.5] * len(array)
-        else:
-            l = 1 / len(array)
-            f = (1 - 2 * l) / d
-            b = (l - f * mina)
-            return [b + f * a for a in array]
+    def _interpolate(self, series, start, end):
+        return MinMaxScaler([start, end]).fit_transform(reshape(series))
 
     #
     # Get discrete results
     #
 
     @classmethod
-    def _get(cls, size):
-        return list(np.linspace(0.0, 1.0, size + 2))[1:-1]
+    def _get(cls, size, start, end):
+        return np.linspace(start, end, size)
 
     #
     # Accessors
     #
 
     @classmethod
-    def alpha(cls, discrete=True, size=None, array=None):
-        if discrete:
-            return cls._get(size)
+    def alpha(cls, sizeOrSeries, start=0.1, end=1.0):
+        if isinstance(sizeOrSeries, int):
+            return cls._get(size=sizeOrSeries, start=start, end=end)
         else:
-            return cls._interpolate(array)
+            return cls._interpolate(series=sizeOrSeries, start=start, end=end)
 
 
 #

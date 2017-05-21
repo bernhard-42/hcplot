@@ -23,10 +23,8 @@ from .geoms.line import Line                                               # noq
 msg = """
 - Highsoft software products (www.highcharts.com) are not free for commercial and Governmental use.
   (see https://shop.highsoft.com/faq#Non-Commercial-0 for conditions for Non-commercial use).
-
 - This product includes color specifications and designs developed by Cynthia Brewer
   http://colorbrewer.org
-
 - D3 category colors and the interpolateRGB algorithm have been taken over from https://d3js.org/,
   Copyright 2010-2017 Mike Bostock
 """

@@ -14,6 +14,7 @@
 
 
 import math
+from ...utils.color import rgb2str
 
 
 class D3Colors(object):
@@ -53,20 +54,32 @@ class D3Colors(object):
     #
 
     @classmethod
-    def c10(cls, size=None):
-        return cls._get(cls.categorialScheme, "c10", size)
+    def c10(cls, sizeOrSeries, asString=False):
+        result = cls._get(cls.categorialScheme, "c10", size=sizeOrSeries)
+        return rgb2str(result) if asString else result
 
     @classmethod
-    def c20(cls, size=None):
-        return cls._get(cls.categorialScheme, "c20", size)
+    def c20(cls, sizeOrSeries, asString=False):
+        result = cls._get(cls.categorialScheme, "c20", size=sizeOrSeries)
+        return rgb2str(result) if asString else result
 
     @classmethod
-    def c20b(cls, size=None):
-        return cls._get(cls.categorialScheme, "c20b", size)
+    def c20b(cls, sizeOrSeries, asString=False):
+        result = cls._get(cls.categorialScheme, "c20b", size=sizeOrSeries)
+        return rgb2str(result) if asString else result
 
     @classmethod
-    def c20c(cls, size=None):
-        return cls._get(cls.categorialScheme, "c20c", size)
+    def c20c(cls, sizeOrSeries, asString=False):
+        result = cls._get(cls.categorialScheme, "c20c", size=sizeOrSeries)
+        return rgb2str(result) if asString else result
+
+    #
+    # Info
+    #
+
+    @classmethod
+    def info(cls):
+        return list(cls.categorialScheme.keys())
 
 
 #

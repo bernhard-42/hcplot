@@ -14,6 +14,8 @@
 
 import os
 from IPython.display import HTML, Javascript, display
+import numpy as np
+import pandas as pd
 
 
 def loadLibraries():
@@ -33,3 +35,12 @@ def update(d, defaults):
     if d is not None:
         def2.update(d)
     return def2
+
+
+def reshape(s):
+    if isinstance(s, (list, tuple)):
+        return np.array(s).reshape(-1, 1)
+    elif isinstance(s, np.ndarray):
+        return s.reshape(-1, 1)
+    elif isinstance(s, pd.core.series.Series):
+        return s.values.reshape(-1, 1)
