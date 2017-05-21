@@ -17,6 +17,7 @@ from .colors.brewer import ColorBrewer
 from .colors.d3 import D3Colors
 from .shape import Shape as ShapeClass
 from .alpha import Alpha as AlphaClass
+from .size import Size as SizeClass
 
 
 class Scale(object):
@@ -69,6 +70,13 @@ class Shape(Scale):
         return ShapeClass.info()
 
 
+class Size(Scale):
+
+    def __init__(self, start=2, end=20, incr=2, discrete=True):
+        self.discrete = discrete
+        self._accessor(SizeClass, "size", {"start": start, "end": end, "incr": incr})
+
+
 
 
 
@@ -102,34 +110,6 @@ class Hue(object):
         self.discrete = discrete
 
 
-class Size(object):
-
-    def __init__(self, start=2, incr=None, end=None, func=None, discrete=True):
-        pass
-        # assert discrete and incr is not None and end is None, \
-        #     "Use start and incr for discrete Size scale"
-        # assert not discrete and (incr is None or end is None), \
-        #     "Use start,incr or start,end for non discrete Size scale"
-
-        # self.discrete = discrete
-        # self.limits = limits
-        # self.func = func
-
-    def get(self):
-        pass
-        # if self.discrete:
-        #     return lambda size: range(start, size + incr, incr)
-        # else:
-        #     def conv(array):
-        #         if end is None:
-        #             return lambda array: range(start, len(array))
-        #         mina = min(array)
-        #         maxa = max(array)
-        #         return None
-        #     return lambda array: conv(array)
-
-
-
 class X(object):
 
     # TODO
@@ -151,7 +131,7 @@ class Y(object):
 
 
 def defaultScale():
-    return {"color": Brewer("qual", "Accent"), "shape": Shape(), "alpha": Alpha()}
+    return {"color": Brewer("qual", "Accent"), "shape": Shape(), "alpha": Alpha(), "size": Size()}
 
 
 def identity():

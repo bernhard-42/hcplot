@@ -444,5 +444,5 @@ class ColorBrewer(object):
 # Quick Accessor
 #
 
-def brewer(typ, palette, size):
+def getBrewer(typ, palette, size):
     return getattr(ColorBrewer, typ)(palette, size)

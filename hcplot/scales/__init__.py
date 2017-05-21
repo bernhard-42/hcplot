@@ -13,4 +13,4 @@
 # limitations under the License.
 
 
-from .scale import Alpha, Brewer, D3, ColorBrewer, Shape           # noqa F401
+from .scale import Alpha, Brewer, D3, ColorBrewer, Shape, Size          # noqa F401

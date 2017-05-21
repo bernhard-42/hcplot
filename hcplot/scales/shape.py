@@ -51,5 +51,5 @@ class Shape(object):
 # Quick Accessor
 #
 
-def shape(size):
+def getShape(size):
     return Shape.shape(size)

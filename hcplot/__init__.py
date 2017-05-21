@@ -14,11 +14,7 @@
 
 
 from .utils.helpers import loadLibraries                                   # noqa F401
-from .config import mapping, single, grid, wrap, matrix, scale             # noqa F401
-from .scales.scale import identity                                         # noqa F401
 from .figure import Figure                                                 # noqa F401
-from .geoms.points import Points                                           # noqa F401
-from .geoms.line import Line                                               # noqa F401
 
 msg = """
 - Highsoft software products (www.highcharts.com) are not free for commercial and Governmental use.

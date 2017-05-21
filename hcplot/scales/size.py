@@ -13,12 +13,44 @@
 # limitations under the License.
 
 
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from ..utils.helpers import reshape
+
+
 class Size(object):
 
-    @classmethod
-    def _interpolate(cls, scheme, color, array):
-        pass
+    #
+    # Get interpolated results for non-discrete case
+    #
 
     @classmethod
-    def _get(cls, scheme, color, size):
-        pass
+    def _interpolate(self, series, start, end):
+        return MinMaxScaler([start, end]).fit_transform(reshape(series)).round()
+
+    #
+    # Get discrete results
+    #
+
+    @classmethod
+    def _get(cls, size, start, incr):
+        return np.arange(start, start + incr * size, incr)
+
+    #
+    # Accessors
+    #
+
+    @classmethod
+    def size(cls, sizeOrSeries, start=2, end=20, incr=1):
+        if isinstance(sizeOrSeries, int):
+            return cls._get(size=sizeOrSeries, start=start, incr=incr)
+        else:
+            return cls._interpolate(series=sizeOrSeries, start=start, end=end)
+
+
+#
+# Quick Accessor
+#
+
+def getSize(size):
+    return Size.size(size)

@@ -86,5 +86,5 @@ class D3Colors(object):
 # Quick Accessor
 #
 
-def d3(typ, size):
+def getD3(typ, size):
     return getattr(D3Colors, typ)(size)

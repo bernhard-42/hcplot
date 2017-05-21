@@ -52,5 +52,5 @@ class Alpha(object):
 # Quick Accessor
 #
 
-def alpha(size):
+def getAlpha(size):
     return Alpha.alpha(size)

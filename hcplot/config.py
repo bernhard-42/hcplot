@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from .scales.scale import identity    # noqa F401
+
 
 class Config(object):
     def __init__(self, param, config, **kwargs):
