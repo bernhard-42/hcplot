@@ -14,7 +14,7 @@
 
 import pandas as pd
 from .config import Config
-from .scales.scale import identity
+from .scales import identity
 from operator import itemgetter
 
 

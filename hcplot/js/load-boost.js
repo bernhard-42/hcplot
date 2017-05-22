@@ -16,16 +16,8 @@
 
 require.config({
     baseUrl: '/js',
-    shim: {
-        "highcharts-more":            ['highcharts'],
-        "highcharts-export":          ['highcharts'],
-        "highcharts-offline-export":  ['highcharts-export']
-    },
     paths: {
-        'highcharts':                 'http://code.highcharts.com/highcharts',
-        'highcharts-more':            'http://code.highcharts.com/highcharts-more',
-        'highcharts-export':          'http://code.highcharts.com/modules/exporting',
-        'highcharts-offline-export':  'http://code.highcharts.com/modules/offline-exporting'
+        'highcharts-boost':           'https://github.highcharts.com/%s/modules/boost.src'
     }
 });
 
@@ -36,9 +28,9 @@ requirejs.onError = function (err) {
 window.hc_charts = {}
 
 window.hc_charts.promise = new Promise(function(resolve, reject) {
-    var modules = ['highcharts', 'highcharts-more', 'highcharts-export', 'highcharts-offline-export'];
+    var modules = ['highcharts-boost'];
     requirejs(modules, function(hc) {
-        element.text("Loaded HighCharts " + Highcharts.version)
+        element.text("Loaded HighCharts boost module (experimental)")
         resolve(Highcharts)
     });
 })

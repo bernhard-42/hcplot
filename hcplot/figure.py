@@ -15,7 +15,7 @@
 from .data import Data, WrapData, GridData
 from .base import Base
 from .utils.json import ScipyEncoder
-from .scales.scale import defaultScale
+from .scales import defaultScales
 from .components import Components
 from .templates import createGrid, createWrap
 
@@ -47,7 +47,7 @@ class Figure(Base):
 
         # define all possible configs, ...
         self.mapping = {}
-        self.scales = defaultScale()
+        self.scales = defaultScales()
 
         data = self.parseArgs(dataOrConfigs)
 

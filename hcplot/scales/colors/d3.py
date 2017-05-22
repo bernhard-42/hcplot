@@ -15,6 +15,7 @@
 
 import math
 from ...utils.color import rgb2str
+import pandas as pd
 
 
 class D3Colors(object):
@@ -80,6 +81,18 @@ class D3Colors(object):
     @classmethod
     def info(cls):
         return list(cls.categorialScheme.keys())
+
+    @classmethod
+    def toDF(cls):
+        typ = "d3"
+        result = []
+
+        for palette, v2 in cls.categorialScheme.items():
+            p = cls.categorialScheme[palette]
+            for j in range(len(p)):
+                result.append({"typ": typ, "palette": palette, "size": len(p), "element": j,
+                               "color": "%d,%d,%d" % p[j]})
+        return pd.DataFrame(result)
 
 
 #

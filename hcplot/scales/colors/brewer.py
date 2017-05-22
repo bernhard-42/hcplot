@@ -17,6 +17,7 @@ import math
 from sklearn.preprocessing import MinMaxScaler
 from ...utils.color import rgbSpline, rgb2str
 from ...utils.helpers import reshape
+import pandas as pd
 
 
 class ColorBrewer(object):
@@ -433,11 +434,32 @@ class ColorBrewer(object):
 
     @classmethod
     def info(cls):
+        def overview(scheme):
+            return {palette: (3, len(scheme[palette])) for palette in scheme.keys()}
+
         return {
-            "div": (list(cls.divScheme.keys())),
-            "qual": (list(cls.qualScheme.keys())),
-            "seq": (list(cls.seqScheme.keys()))
+            "div": overview(cls.divScheme),
+            "qual": overview(cls.qualScheme),
+            "seq": overview(cls.seqScheme)
         }
+
+    @classmethod
+    def toDF(cls, typ):
+        if typ is None:
+            types = cls.info().keys()
+        else:
+            types = [typ]
+
+        result = []
+        for typ in types:
+            scheme = getattr(ColorBrewer, typ + "Scheme")
+            v1 = cls.info()[typ]
+            for palette, v2 in v1.items():
+                for i in range(*v2):
+                    for j in range(i):
+                        result.append({"typ": typ, "palette": palette, "size": i, "element": j,
+                                       "color": "%d,%d,%d" % scheme[palette][i][j]})
+        return pd.DataFrame(result)
 
 
 #

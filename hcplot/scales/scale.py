@@ -47,6 +47,10 @@ class D3(Scale):
     def info(cls):
         return D3Colors.info()
 
+    @classmethod
+    def toDF(cls, typ=None):
+        return D3Colors.toDF()
+
 
 class Brewer(Scale):
 
@@ -57,6 +61,10 @@ class Brewer(Scale):
     @classmethod
     def info(cls):
         return ColorBrewer.info()
+
+    @classmethod
+    def toDF(cls, typ=None):
+        return ColorBrewer.toDF(typ)
 
 
 class Shape(Scale):
@@ -130,13 +138,4 @@ class Y(object):
         self.func = func
 
 
-def defaultScale():
-    return {"color": Brewer("qual", "Accent"), "shape": Shape(), "alpha": Alpha(), "size": Size()}
 
-
-def identity():
-    return 1
-
-
-def manual(obj):
-    return obj

@@ -13,16 +13,18 @@
 # limitations under the License.
 
 
-from .scale import Alpha, Brewer, D3, ColorBrewer, Shape, Size          # noqa F401
+from ..figure import Figure
+from ..scales import identity
+from ..config import wrap, mapping, scale
+from ..geoms import Points
+import pandas as pd
 
 
-def defaultScales():
-    return {"color": Brewer("qual", "Accent"), "shape": Shape(), "alpha": Alpha(), "size": Size()}
+def showPalette(colorScale, typ=None):
+    df = pd.DataFrame(colorScale.toDF(typ))
+    figure = Figure(df, wrap(["palette"], ncols=3),
+                    mapping("element", "size", color="color"),
+                    scale(color=identity())) \
+        + Points(size=8, shape="square")
 
-
-def identity():
-    return 1
-
-
-def manual(obj):
-    return obj
+    return figure

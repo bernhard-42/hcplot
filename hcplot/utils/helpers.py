@@ -12,22 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-from IPython.display import HTML, Javascript, display
+
 import numpy as np
 import pandas as pd
-
-
-def loadLibraries():
-    folder = os.path.dirname(__file__)
-
-    with open(os.path.join(folder, "../css", "styles.css"), "r") as fd:
-        css = fd.read()
-    display(HTML("<style>%s</style>" % css))
-
-    with open(os.path.join(folder, "../js", "load.js"), "r") as fd:
-        js = fd.read()
-    display(Javascript(js))
 
 
 def update(d, defaults):
