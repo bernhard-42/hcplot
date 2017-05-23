@@ -20,7 +20,7 @@ from ..geoms import Points
 import pandas as pd
 
 
-def showPalette(colorScale, typ=None):
+def plotPalettes(colorScale, typ=None):
     df = pd.DataFrame(colorScale.toDF(typ))
     figure = Figure(df, wrap(["palette"], ncols=3),
                     mapping("element", "size", color="color"),
@@ -28,3 +28,21 @@ def showPalette(colorScale, typ=None):
         + Points(size=8, shape="square")
 
     return figure
+
+
+def plotScales(palettes):
+    plots = len(palettes)
+    size = len(palettes[0])
+
+    data = {"X": range(size)}
+    data.update({"Y%d" % i: [i] * size for i in range(plots)})
+    if isinstance(palettes[0][0], str):
+        data.update({"C%d" % i: palettes[i] for i in range(plots)})
+    else:
+        data.update({"C%d" % i: ["%d,%d,%d" % rgb for rgb in palettes[i]] for i in range(plots)})
+
+    fig = Figure(data, width=70*size, ratio=plots/size)
+    for i in range(plots):
+        fig += Points(mapping("X", "Y%d" % i, color="C%d" % i),
+                      scale(color=identity()), size=30, shape="square", lineWidth=1)
+    return fig

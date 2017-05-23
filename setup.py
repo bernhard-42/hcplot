@@ -17,6 +17,12 @@ setup(
     packages=find_packages(),
     package_data={'hcplot': ['js/*', 'css/*']},
     long_description=read('Readme.md'),
+    install_requires=[
+          'pandas',
+          'numpy',
+          'sklearn',
+          'colormath'
+    ],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Topic :: Utilities",

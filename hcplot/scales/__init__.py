@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-from .scale import Alpha, Brewer, D3, ColorBrewer, Shape, Size          # noqa F401
+from .scale import Alpha, Brewer, D3, Hue, Shape, Size          # noqa F401
 
 
 def defaultScales():

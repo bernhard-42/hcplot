@@ -14,6 +14,7 @@
 
 
 from .colors.brewer import ColorBrewer
+from .colors.hue import HueColors
 from .colors.d3 import D3Colors
 from .shape import Shape as ShapeClass
 from .alpha import Alpha as AlphaClass
@@ -85,37 +86,19 @@ class Size(Scale):
         self._accessor(SizeClass, "size", {"start": start, "end": end, "incr": incr})
 
 
+class Hue(Scale):
 
+    dynamic = (30,  300)
+    harmonic = (60,  240)
+    cold = (300, 150)
+    warm = (90,  -30)
 
-
-
-
-
-
-
-class Gradient(object):
-
-    # TODO
-
-    def __init__(self, typ):
-        self.discrete = True
-        self.typ = typ
-
-
-class Grey(object):
-
-    # TODO
-
-    def __init__(self, discrete=True):
+    def __init__(self, typ, h, c, l, fc=None, fl=None, discrete=True, asString=True):
         self.discrete = discrete
-
-
-class Hue(object):
-
-    # TODO
-
-    def __init__(self, discrete=True):
-        self.discrete = discrete
+        if typ == "qual":
+            self._accessor(HueColors, typ, {"h": h, "c": c, "l": l, "asString": asString})
+        else:
+            self._accessor(HueColors, typ, {"h": h, "c": c, "l": l, "fc": fc, "fl": fl, "asString": asString})
 
 
 class X(object):

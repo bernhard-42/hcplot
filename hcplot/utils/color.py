@@ -13,6 +13,8 @@
 # limitations under the License.
 
 
+from colormath.color_objects import sRGBColor, LCHabColor
+from colormath.color_conversions import convert_color
 from .interpolate import spline
 
 
@@ -70,6 +72,16 @@ css3Colors = {
     "White":             (255, 255, 255), "WhiteSmoke":           (245, 245, 245), "Yellow":          (255, 255,   0),        # noqa E501,E231,E201
     "YellowGreen":       (154, 205,  50)
 }
+
+
+def rgb2hcl(r, g, b):
+    rgb = sRGBColor(r, g, b, True)
+    return list(reversed(convert_color(rgb, LCHabColor, sRGBColor).get_value_tuple()))
+
+
+def hcl2rgb(h, c, l):
+    lch = LCHabColor(l, c, h)
+    return convert_color(lch, sRGBColor).get_upscaled_value_tuple()
 
 
 def rgb2web(rgbs):
