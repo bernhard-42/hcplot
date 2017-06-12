@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from ..marker import Marker
-from ..types import Color
+from ..color import Color
 from .base import SeriesBase4
 from traitlets import Integer, Unicode, Instance
 

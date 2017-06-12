@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from .base import HCBase
-from .types import Color
+from .color import Color
 from traitlets import Integer, Unicode
 
 

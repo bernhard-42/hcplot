@@ -14,7 +14,7 @@
 
 from .base import HCBase
 from traitlets import TraitType, Float, Integer, Undefined
-from .types import Color
+from .color import Color
 
 
 class Shadow(HCBase):

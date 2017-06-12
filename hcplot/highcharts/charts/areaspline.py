@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ..types import Color
+from ..color import Color, _FillColor
 from .spline import SplineOptions
 from traitlets import Float, Bool, Unicode
 
 
 class AreaSplineOptions(SplineOptions):
-    fillColor = Color(None, allow_none=True)
+    fillColor = _FillColor(None, allow_none=True)
     lineColor = Color(None, allow_none=True)
     fillOpacity = Float(None, allow_none=True)
     negativeFillColor = Color(None, allow_none=True)

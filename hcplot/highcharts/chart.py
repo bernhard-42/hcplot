@@ -14,6 +14,7 @@
 
 from .base import HCBase
 from .buttons import ResetZoomButton
+from .color import Color
 from .credits import Credits
 from .data import Data
 from .drilldown import DrillDown
@@ -28,7 +29,7 @@ from .plotoptions import PlotOptions
 from .series import Series
 from .title import SubTitle, Title
 from .tooltip import Tooltip
-from .types import Color, CSSObject, NumberOrString
+from .types import CSSObject, NumberOrString
 from .animation import _Animation
 from .shadow import _Shadow
 from .xyzaxis import XAxis, YAxis, ZAxis

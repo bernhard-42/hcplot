@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ..types import Color
+from ..color import Color
 from .base import ColumnBase
 from traitlets import Unicode, Integer
 

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .types import Color
+from .color import Color
 from .datalabels import DataLabels
 from .events import PlotEvents2
 from .position import XYFloat

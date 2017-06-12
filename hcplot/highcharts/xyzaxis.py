@@ -27,8 +27,9 @@
 # limitations under the License.
 
 from .base import HCBase
+from .color import Color
 from .crosshair import _CrossHair
-from .types import Function, CSSObject, Color, FloatOrAuto
+from .types import Function, CSSObject, FloatOrAuto
 from .position import XYFloat
 from .events import PlotEvents
 from traitlets import Unicode, Bool, Integer, Instance, Float, List, Tuple, Any, Dict

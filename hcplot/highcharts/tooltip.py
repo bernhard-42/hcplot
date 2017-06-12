@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from .base import HCBase
-from .types import CSSObject, Function, Color
+from .types import CSSObject, Function
+from .color import Color
 from .crosshair import _CrossHair
 from traitlets import Unicode, Bool, Integer, Dict
 

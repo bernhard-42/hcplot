@@ -14,7 +14,7 @@
 
 from .base import HCBase
 from traitlets import TraitType, Integer, Unicode, Undefined, Bool
-from .types import Color
+from .color import Color
 
 
 class CrossHair(HCBase):

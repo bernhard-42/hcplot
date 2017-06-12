@@ -34,11 +34,15 @@ class HCBase(HasTraits):
                 else:
                     if isinstance(value, (tuple, list)):
                         if len(value) > 0:
-                            if isinstance(value[0], HCBase):
-                                result[key] = [el.toDict() for el in value]
-                            else:
-                                print(value)
-                                result[key] = [el for el in value]
+                            result[key] = []
+                            for el in value:
+                                if isinstance(el, HCBase):
+                                    if hasattr(el, "conv"):
+                                        result[key].append(el.conv(el.toDict()))
+                                    else:
+                                        result[key].append(el.toDict())
+                                else:
+                                    result[key].append(el)
                     elif isinstance(value, dict):
                         if len(value) > 0:
                             result[key] = {k: v.toDict() for k, v in value.items()}
@@ -48,3 +52,7 @@ class HCBase(HasTraits):
 
     def toJson(self, indent=None):
         return json.dumps(self.toDict(), indent=indent)
+
+    @staticmethod
+    def conv(value):
+        return value

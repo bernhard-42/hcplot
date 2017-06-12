@@ -20,7 +20,8 @@ from ..seriesdata import _SeriesData
 from ..seriesstates import SeriesStates
 from ..shadow import _Shadow
 from ..tooltip import SeriesTooltip
-from ..types import Function, Color, IntegerOrPercentageString, NumberOrString
+from ..types import Function, IntegerOrPercentageString, NumberOrString
+from ..color import Color
 from ..xyzaxis import XAxis, YAxis
 from ..zone import Zone
 from traitlets import Unicode, Bool, Integer, Instance, Float, List

@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from .base import HCBase
-from .types import Color, NumberOrString, IntegerOrPercentageString
+from .color import Color
+from .types import NumberOrString, IntegerOrPercentageString
 from traitlets import Instance, Unicode, List, Integer
 
 

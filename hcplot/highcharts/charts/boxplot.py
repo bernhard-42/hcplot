@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ..types import Color
+from ..color import Color, _FillColor
 from .errorbar import ErrorBarOptions
 from traitlets import Bool, Float, Integer, Unicode
 
 
 class BoxPlotOptions(ErrorBarOptions):
-    fillColor = Color(None, allow_none=True)
+    fillColor = _FillColor(None, allow_none=True)
     grouping = Bool(None, allow_none=True)
     groupPadding = Float(None, allow_none=True)
     medianColor = Color(None, allow_none=True)

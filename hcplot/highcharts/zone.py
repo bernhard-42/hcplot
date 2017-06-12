@@ -13,13 +13,13 @@
 # limitations under the License.
 
 from .base import HCBase
-from .types import Color
+from .color import Color, _FillColor
 from traitlets import Float, Unicode
 
 
 class Zone(HCBase):
     className = Unicode(None, allow_none=True)
-    color = Color(None, allow_none=True)
+    color = _FillColor(None, allow_none=True)
     dashStyle = Unicode(None, allow_none=True)
     fillColor = Color(None, allow_none=True)
     value = Float(None, allow_none=True)

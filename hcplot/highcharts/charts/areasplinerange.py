@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ..types import NumberOrString, Color
+from ..types import NumberOrString
+from ..color import Color, _FillColor
 from .base import SeriesBase4
 from traitlets import Integer, Unicode, Float, Bool
 
@@ -26,10 +27,10 @@ class AreaSplineRangeOptions(SeriesBase4):
     negativeColor = Color(None, allow_none=True)
     linecap = Unicode(None, allow_none=True)
     connectNulls = Bool(None, allow_none=True)
-    fillColor = Color(None, allow_none=True)
+    fillColor = _FillColor(None, allow_none=True)
     lineColor = Color(None, allow_none=True)
     fillOpacity = Float(None, allow_none=True)
-    negativeFillColor = Color(None, allow_none=True)
+    negativeFillColor = _FillColor(None, allow_none=True)
     trackByArea = Bool(None, allow_none=True)
 
     def __init__(self, **kwargs):

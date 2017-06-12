@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from .base import HCBase
-from .types import Color, BoolOrString
+from .color import Color
+from .types import BoolOrString
 from traitlets import Integer, Instance, Bool, Unicode
 
 

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from ..dial import Dial, Pivot
-from ..types import Color
+from ..color import Color
 from .base import GaugeBase
 from traitlets import Bool, Integer, Instance, Unicode
 

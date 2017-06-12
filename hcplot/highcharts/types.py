@@ -13,32 +13,6 @@
 # limitations under the License.
 
 from traitlets import TraitType, Undefined
-from ..utils.color import web2rgba
-
-
-class Color(TraitType):
-    """A color trait."""
-
-    default_value = "rgba(124,181,236,1.0)"
-    info_text = 'an rgba color'
-
-    def __init__(self, default_value=Undefined, allow_none=False, **kwargs):
-        super(__class__, self).__init__(default_value=default_value,          # noqa F821
-                                        allow_none=allow_none, **kwargs)
-
-    def validate(self, obj, value):
-        if isinstance(value, tuple) and (len(value) == 3 or len(value) == 4):
-            return value
-        else:
-            try:
-                rgba = web2rgba(value)
-                return rgba
-            except Exception:
-                self.error(obj, value)
-
-    @staticmethod
-    def conv(value):
-        return "rgba(%d,%d,%d,%5.3f)" % value
 
 
 class Function(TraitType):

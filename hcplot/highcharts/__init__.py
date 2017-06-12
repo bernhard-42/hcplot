@@ -17,6 +17,7 @@ from .buttons import ContextButtons, Buttons, ResetZoomButton                   
 from .buttons import MenuItem, SvgTheme, ButtonStates, SvgButtonTheme, ButtonOptions   # noqa F401
 from .chart import Chart, ChartOptions                                                 # noqa F401
 from .credits import Credits                                                           # noqa F401
+from .color import Color, FillColor, RadialGradient, LinearGradient, GradientStop      # noqa F401
 from .crosshair import CrossHair, _CrossHair                                           # noqa F401
 from .data import Data                                                                 # noqa F401
 from .datalabels import DataLabels, Level                                              # noqa F401
@@ -41,7 +42,7 @@ from .seriesstates import Halo, Hover, SeriesStates                             
 from .shadow import Shadow, _Shadow                                                    # noqa F401
 from .title import SubTitle, Title                                                     # noqa F401
 from .tooltip import Tooltip, SeriesTooltip                                            # noqa F401
-from .types import BoolOrString, NumberOrString, FloatOrAuto, Color, Function          # noqa F401
+from .types import BoolOrString, NumberOrString, FloatOrAuto, Function                 # noqa F401
 from .types import IntegerOrPercentageString, CSSObject,SVGObject                      # noqa F401
 from .xyzaxis import Break, AxisEvents, AxisLabels, PlotLabel, PlotBand, PlotLine      # noqa F401
 from .xyzaxis import XAxis, StackLabels, YAxis, AxisTitle, ZAxis                       # noqa F401

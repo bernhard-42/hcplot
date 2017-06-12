@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from .base import HCBase
-from .types import CSSObject, Function, Color
+from .color import Color
+from .types import CSSObject, Function
 from .animation import _Animation
 from .shadow import _Shadow
 from .position import XYInteger

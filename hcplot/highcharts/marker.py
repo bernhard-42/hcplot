@@ -13,13 +13,13 @@
 # limitations under the License.
 
 from .base import HCBase
-from .types import Color
+from .color import Color, _FillColor
 from traitlets import Integer, Instance, Bool
 
 
 class MarkerSelect(HCBase):
     enabled = Bool(None, allow_none=True)
-    fillColor = Color(None, allow_none=True)
+    fillColor = _FillColor(None, allow_none=True)
     lineColor = Color(None, allow_none=True)
     lineWidth = Integer(None, allow_none=True)
     radius = Integer(None, allow_none=True)
@@ -40,7 +40,7 @@ class MarkerStates(HCBase):
 
 class Marker(HCBase):
     enabled = Bool(None, allow_none=True)
-    fillColor = Color(None, allow_none=True)
+    fillColor = _FillColor(None, allow_none=True)
     height = Integer(None, allow_none=True)
     lineColor = Color(None, allow_none=True)
     lineWidth = Integer(None, allow_none=True)
