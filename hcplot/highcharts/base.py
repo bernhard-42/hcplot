@@ -12,26 +12,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from traitlets import HasTraits
+import json
 
-class HCBase(object):
 
-    def __init__(self, **kwargs):
+class HCBase(HasTraits):
 
-        self.dict = {}
-        self.setIfExists(**kwargs)
+    def toDict(self):
+        result = {}
+        for key, cls in self.class_traits().items():
+            value = getattr(self, key)
+            if value is not None:
+                if key[-1] == "_":
+                    key = key[:-1]
+                key = key.replace("_", "")
 
-    def setIfExists(self, **kwargs):
+                if isinstance(value, HCBase):
+                    result[key] = value.toDict()
+                elif hasattr(cls, "conv"):
+                    result[key] = cls.conv(value)
+                else:
+                    if isinstance(value, (tuple, list)):
+                        if len(value) > 0:
+                            if isinstance(value[0], HCBase):
+                                result[key] = [el.toDict() for el in value]
+                            else:
+                                print(value)
+                                result[key] = [el for el in value]
+                    elif isinstance(value, dict):
+                        if len(value) > 0:
+                            result[key] = {k: v.toDict() for k, v in value.items()}
+                    else:
+                        result[key] = value
+        return result
 
-        for k, v in kwargs.items():
-            if k != "self" and v is not None:
-                self.dict[k] = v
-
-    def check(self, name, var, cls, array=False):
-
-        if array:
-            assert (var is None or (isinstance(var, (list, tuple)) and
-                    len(var) > 0 and isinstance(var[0], cls))), \
-                "%s must be a list of instances of class %s" % (name, cls.__name__)
-        else:
-            assert var is None or isinstance(var[0], cls), \
-                "%s must be an instance of class %s" % (name, cls.__name__)
+    def toJson(self, indent=None):
+        return json.dumps(self.toDict(), indent=indent)

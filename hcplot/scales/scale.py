@@ -21,6 +21,52 @@ from .alpha import Alpha as AlphaClass
 from .size import Size as SizeClass
 
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+#
+# X and Y scale (Continuous, discrete and dates)
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+
+class Cont(object):
+
+    # TODO
+
+    def __init__(self, trans=None, ticks=None, minorTicks=None, labels=None, limits=None, ):
+        self.trans = trans
+        self.ticks = ticks
+        self.minorTicks = minorTicks
+        self.labels = labels
+        self.limits = limits
+
+
+class Cat(object):
+
+    # TODO
+
+    def __init__(self, ticks=None, limits=None, labels=None):
+        self.ticks = ticks
+        self.limits = limits
+        self.labels = labels
+
+
+class Date(object):
+
+    # TODO
+
+    def __init__(self, ticks=None, limits=None, labels=None):
+        self.ticks = ticks
+        self.limits = limits
+        self.labels = labels
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+#
+# Aesthetic scales
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+
 class Scale(object):
 
     def _accessor(self, cls, accessor, kwargs):
@@ -99,26 +145,5 @@ class Hue(Scale):
             self._accessor(HueColors, typ, {"h": h, "c": c, "l": l, "asString": asString})
         else:
             self._accessor(HueColors, typ, {"h": h, "c": c, "l": l, "fc": fc, "fl": fl, "asString": asString})
-
-
-class X(object):
-
-    # TODO
-
-    def __init__(self, func=None, reverse=False, discrete=True):
-        self.discrete = discrete
-        self.reverse = reverse
-        self.func = func
-
-
-class Y(object):
-
-    # TODO
-
-    def __init__(self, func=None, reverse=False, discrete=True):
-        self.discrete = discrete
-        self.reverse = reverse
-        self.func = func
-
 
 

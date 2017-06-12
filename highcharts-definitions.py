@@ -1,595 +1,522 @@
-class Position(object):
-    def __init__(self, align, verticalAlign, x, y):
-        self.json = {
-            "align": align,
-            "verticalAlign": verticalAlign,
-            "x": x,
-            "y": y
-        }
+
+class HCBase(object):
+    def __init__(self, **kwargs):
+        self.dict = {}
+        self.setIfExists(**kwargs)
+
+    def setIfExists(**kwargs):
+        for k,v in kwargs.items():
+            if if k != "self" and v is not None:
+                self.dict[k] = v
+
+    def check(self, name, var, cls, array=False):
+        if array:
+            assert var is None or (isinstance(var, (list, tuple)) and len(var) > 0 and isinstance(var[0], cls)),
+                "%s must be a list of instances of class %s" % (name, cls.__name__)
+        else:
+            assert var is None or isinstance(var[0], cls),
+                "%s must be an instance of class %s" % (name, cls.__name__)
 
 
-class Style(object):
-    def __init__(self, cursor=None, color=None, fontSize=None, textShadow=None, fontWeight=None, pointerEvents=None, whiteSpace=None):
-        self.json = {}
-        if cursor is not None:
-            self.json[cursor] = cursor
-        if color is not None:
-            self.json[color] = color
-        if fontSize is not None:
-            self.json[fontSize] = fontSize
-        if textShadow is not None:
-            self.json[textShadow] = textShadow
-        if fontWeight is not None:
-            self.json[fontWeight] = fontWeight
-        if pointerEvents is not None:
-            self.json[pointerEvents] = pointerEvents
-        if whiteSpace is not None:
-            self.json[whiteSpace] = whiteSpace
+class Position(HCBase):
+
+    def __init__(self, align=None, verticalAlign=None, x=None, y=None):
+        
+        super(__class__, self).__init__(locals())
 
 
-class BaseLabel(object):
-    def __init__(self, align, rotation, style, useHTML, x, y):
-        self.json = {
-            "align": align,
-            "rotation": rotation,
-            "style": style,
-            "useHTML": useHTML,
-            "x": x,
-            "y": y
-        }
+class Style(HCBase):
+
+    def __init__(self, cursor=None, color=None, fontSize=None, textShadow=None, 
+                 fontWeight=None, pointerEvents=None, whiteSpace=None):
+        
+        super(__class__, self).__init__(locals())
 
 
-class Label(object):
-    def __init__(self, align, rotation, style, text, textAlign, useHTML, verticalAlign, x, y):
+class BaseLabel(HCBase):
+
+    def __init__(self, align=None, rotation=None, style=None, useHTML=None, x=None, y=None):
+        
+        self.check("style", style, Style)
+
+        super(__class__, self).__init__(locals())
+
+
+class Label(BaseLabel):
+
+    def __init__(self, align=None, rotation=None, style=None, useHTML=None, x=None, y=None, 
+                 text=None, textAlign=None, verticalAlign=None):
+        
+        self.check("style", style, Style)
+
         super(__class__, self).__init__(align, rotation, style, useHTML, verticalAlign, x, y)
-        options = {"text": text,
-                   "textAlign": textAlign,
-                   "verticalAlign": verticalAlign}
-        self.json.update(options)
+        
+        params = {"text": text, "textAlign": textAlign, "verticalAlign": verticalAlign}
+        self.setIfExists(params)
 
 
 class Labels(BaseLabel):
-    def __init__(self, align, autoRotation, autoRotationLimit, distance, enabled, format, formatter, maxStaggerLines,
-                 overflow, padding, reserveSpace, rotation, staggerLines, step, style, useHTML, x, y, zIndex):
+
+    def __init__(self, align=None, rotation=None, style=None, useHTML=None, x=None, y=None, 
+                 autoRotation=None, autoRotationLimit=None, distance=None, enabled=None, 
+                 format_=None, formatter=None, maxStaggerLines=None, overflow=None, padding=None, 
+                 reserveSpace=None, staggerLines=None, step=None, zIndex=None):
+        
+        self.check("style", style, Style)
+
         super(__class__, self).__init__(align, rotation, style, useHTML, verticalAlign, x, y)
-        options={"autoRotation": autoRotation,
-                 "autoRotationLimit": autoRotationLimit,
-                 "distance": distance,
-                 "enabled": enabled,
-                 "format": format,
-                 "formatter": formatter,
-                 "maxStaggerLines": maxStaggerLines,
-                 "overflow": overflow,
-                 "padding": padding,
-                 "reserveSpace": reserveSpace,
-                 "staggerLines": staggerLines,
-                 "step": step,
-                 "zIndex": zIndex, }
-        self.json.update(options)
+        
+        params = {"autoRotation": autoRotation, "autoRotationLimit": autoRotationLimit, 
+                  "distance": distance, "enabled": enabled, "format": format_, "formatter": formatter, 
+                  "maxStaggerLines": maxStaggerLines, "overflow": overflow, "padding": padding, 
+                  "reserveSpace": reserveSpace, "staggerLines": staggerLines,"step": step, "zIndex": zIndex}
+        self.setIfExists(params)
 
 
-class PlotBand(object):
-    def __init__(self, borderColor, borderWidth, className, color, events, from_, id, label, to, zIndex):
-        self.json = {
-            "borderColor": borderColor,
-            "borderWidth": borderWidth,
-            "className": className,
-            "color": color,
-            "events": events,
-            "from": from_,
-            "id": id,
-            "label": label,
-            "to": to,
-            "zIndex": zIndex
-        }
+class PlotBand(HCBase):
+
+    def __init__(self, borderColor=None, borderWidth=None, className=None, color=None, events=None, 
+                 from_=None, id_=None, label=None, to=None, zIndex=None):
+        
+        super(__class__, self).__init__(locals())
 
 
-class PlotLine(object):
-    def __init__(self, className, color, dashStyle, events, id, label, value, width, zIndex):
-        self.json = {
-            "className": className,
-            "color": color,
-            "dashStyle": dashStyle,
-            "events": events,
-            "id": id,
-            "label": label,
-            "value": value,
-            "width": width,
-            "zIndex": zIndex
-        }
+class PlotLine(HCBase):
+
+    def __init__(self, className=None, color=None, dashStyle=None, events=None, id_=None, label=None, 
+                 value=None, width=None, zIndex=None):
+        
+        super(__class__, self).__init__(locals())
 
 
-class BaseTitle(object):
-    def __init__(self,):
-        self.json = {
-            "align": "center",
-            "style": {"color": "#666666"},
-            "text": None,
-            "x": 0,
-            "y": None,
-        }
+class BaseTitle(HCBase):
+
+    def __init__(self, align=None, style=None, text=None, x=None, y=None):
+        
+        self.check("style", style, Style)
+    
+        super(__class__, self).__init__()
+        
+        params = {"align"=align, "style"=style, "text"=text, "x"=x, "y"=y}
+        self.setIfExists(params)
 
 
 class SubTitle(BaseTitle):
-    def __init__(self, align, style, text, x, y, useHTML, floating, verticalAlign, widthAdjust):
+
+    def __init__(self, align=None, style=None, text=None, x=None, y=None, 
+                 useHTML=None, floating=None, verticalAlign=None, widthAdjust=None):
+        self.check("style", style, Style)
+     
         super(__class__, self).__init__(align, style, text, x, y)
-        options = {
-            "useHTML": useHTML,
-            "floating": floating,
-            "verticalAlign": verticalAlign,
-            "widthAdjust": widthAdjust,
-        }
-        self.json.update(options)
+        params = {"useHTML": useHTML, "floating": floating, "verticalAlign": verticalAlign, 
+                  "widthAdjust": widthAdjust}
+        self.setIfExists(params)
 
 
 class Title(SubTitle):
-    def __init__(self, align, style, text, x, y, useHTML, floating, margin, verticalAlign, widthAdjust):
-        super(__class__, self).__init__(align, style, text, x, y, useHTML,
-                                        floating, verticalAlign, widthAdjust)
-        options = {
-            "margin": margin
-        }
-        self.json.update(options)
+
+    def __init__(self, align=None, style=None, text=None, x=None, y=None, 
+                 useHTML=None, floating=None, verticalAlign=None, widthAdjust=None, 
+                 margin=None):
+        
+        self.check("style", style, Style)
+    
+        super(__class__, self).__init__(align, style, text, x, y, useHTML, floating, verticalAlign, 
+                                        widthAdjust)
+        params = {"margin": margin}
+        self.setIfExists(params)
 
 
 class AxisTitle(BaseTitle):
-    def __init__(self, align, style, text, x, y, enabled, margin, offset, reserveSpace, rotation):
+
+    def __init__(self, align=None, style=None, text=None, x=None, y=None, 
+                 enabled=None, margin=None, offset=None, reserveSpace=None, rotation=None):
+        self.check("style", style, Style)
+        
         super(__class__, self).__init__(align, style, text, x, y)
-        options = {
-            "enabled": enabled,
-            "margin": margin,
-            "offset": offset,
-            "reserveSpace": reserveSpace,
-            "rotation": rotation,
-        }
-        self.json.update(options)
+        params = {"enabled": enabled, "margin": margin, "offset": offset, "reserveSpace": reserveSpace, 
+                  "rotation": rotation}
+        self.setIfExists(params)
 
 
-class Break(object):
-    def __init__(self, breakSize, from_, repeat, to):
-        self.json = {
-            "breakSize":  breakSize,
-            "from": from_,
-            "repeat":  repeat,
-            "to": to
-        },
+class Break(HCBase):
+
+    def __init__(self, breakSize=None, from_=None, repeat=None, to=None):
+    
+        super(__class__, self).__init__(locals())
 
 
-class Crosshair(object):
-    def __init__(self, className, color, dashStyle, snap, width, zIndex):
-        self.json = {
-            "className": className,
-            "color":  color,
-            "dashStyle": dashStyle,
-            "snap":  snap,
-            "width": width,
-            "zIndex":  zIndex,
-        }
+class Crosshair(HCBase):
+
+    def __init__(self, className=None, color=None, dashStyle=None, snap=None, width=None, zIndex=None):
+    
+        super(__class__, self).__init__(locals())
 
 
-"chart": {
-    "alignTicks": True,
-    "animation": True,
-    "backgroundColor": "#FFFFFF",
-    "borderColor": "#335cad",
-    "borderRadius": 0,
-    "borderWidth": 0,
-    "className": None,
-    "colorCount": 10,
-    "defaultSeriesType": "line",
-    "description": None,
-    "events": {
-        "addSeries": None,
-        "afterPrint": None,
-        "beforePrint": None,
-        "click": None,
-        "drilldown": None,
-        "drillup": None,
-        "drillupall": None,
-        "load": None,
-        "redraw": None,
-        "render": None,
-        "selection": None
-    },
-    "height": None,
-    "ignoreHiddenSeries": True,
-    "inverted": False,
-    "margin": None,
-    "marginBottom": None,
-    "marginLeft": None,
-    "marginRight": None,
-    "marginTop": None,
-#   "options3d": { },
-    "panKey": None,
-    "panning": False,
-    "pinchType": None,
-    "plotBackgroundColor": None,
-    "plotBackgroundImage": None,
-    "plotBorderColor": "#cccccc",
-    "plotBorderWidth": 0,
-    "plotShadow": False,
-    "polar": False,
-    "reflow": True,
-    "renderTo": None,
-#   "resetZoomButton": { },
-    "selectionMarkerFill": "rgba(51,92,173,0.25)",
-    "shadow": False,
-    "showAxes": False,
-    "spacing": [10, 10, 15, 10],
-    "spacingBottom": 15,
-    "spacingLeft": 10,
-    "spacingRight": 10,
-    "spacingTop": 10,
-    "style": Style(fontFamily="\"Lucida Grande\", \"Lucida Sans Unicode\", Verdana, Arial, Helvetica, sans-serif", fontSize="12px"),
-    "type": "line",
-    "typeDescription": None,
-    "width": None,
-    "zoomType": None,
-}
+class Credits(HCBase):
 
-"credits": {
-    "enabled": True,
-    "href": "http://www.highcharts.com",
-    "position": Position(align="right", verticalAlign="bottom", x=-10, y=-5).json
-    "style": Style(cursor="pointer", color="#999999",  fontSize="10px"),
-    "text": "Highcharts.com",
-}
-
-"data": {
-    "columns":None,
-    "complete":None,
-    "csv": None,
-    "dateFormat": None,
-    "decimalPoint": ".",
-    "endColumn":None,
-    "endRow":None,
-    "firstRowAsNames": True,
-    "googleSpreadsheetKey":None,
-    "googleSpreadsheetWorksheet": None,
-    "itemDelimiter":None,
-    "lineDelimiter": "\n",
-    "parseDate":None,
-    "parsed":None,
-    "rows":None,
-    "seriesMapping": None,
-    "startColumn": 0,
-    "startRow": 0,
-    "switchRowsAndColumns": False,
-    "table":None,
-}
-
-"labels": {
-    "items": [{
-        "html": None,
-        "style": None
-    }],
-    "style": Style(color="#333333")
-}
-
-"legend": {
-    "align": "center",
-    "backgroundColor": None,
-    "borderColor": "#999999",
-    "borderRadius": 0,
-    "borderWidth": 0,
-    "enabled": True,
-    "floating": False,
-    "itemDistance": 20,
-    "itemHiddenStyle": { "color": "#cccccc" },
-    "itemHoverStyle": { "color": "#000000" },
-    "itemMarginBottom": 0,
-    "itemMarginTop": 0,
-    "itemStyle": Style(color="#333333", cursor="pointer", fontSize="12px", fontWeight="bold"),
-    "itemWidth": None,
-    "labelFormat": "{name}",
-    "labelFormatter": None,
-    "layout": "horizontal",
-    "lineHeight": 16,
-    "margin": 12,
-    "maxHeight": None,
-    "navigation": {
-        "activeColor": "#003399",
-        "animation": True,
-        "arrowSize": 12,
-        "enabled": True,
-        "inactiveColor": "#cccccc",
-        "style": None
-    },
-    "padding": 8,
-    "reversed": False,
-    "rtl": False,
-    "shadow": False,
-    "squareSymbol": True,
-    "style": None,
-    "symbolHeight": None,
-    "symbolPadding": 5,
-    "symbolRadius": None,
-    "symbolWidth": None,
-    "title": {
-        "style": {"fontWeight":"bold"},
-        "text": None
-    },
-    "useHTML": False,
-    "verticalAlign": "bottom",
-    "width": None,
-    "x": 0,
-    "y": 0,
-}
-
-"subtitle": SubTitle(align="center", floating=False, style={ "color": "#666666" }, text=None, useHTML=False, verticalAlign=" ", widthAdjust=-44, x=0, y=None)
-"title": Title(align="center", floating=False, margin=15, style=Style(color="#333333", fontSize="18px"), text="Chart title", useHTML=False, verticalAlign=None, widthAdjust=-44, x=0, y=None)
-
-"tooltip": {
-    "animation": True,
-    "backgroundColor": "rgba(247,247,247,0.85)",
-    "borderColor": None,
-    "borderRadius": 3,
-    "borderWidth": 1,
-    "crosshairs": None,
-    "dateTimeLabelFormats": None,
-    "enabled": True,
-    "followPointer": False,
-    "followTouchMove": True,
-    "footerFormat": "False",
-    "formatter": None,
-    "headerFormat":None,
-    "hideDelay": 500,
-    "padding": 8,
-    "pointFormat": "<span style=\"color\":{point.color}\">\u25CF</span> {series.\"name}\": <b>{point.y}</b><br/>",
-    "pointFormatter":None,
-    "positioner": None,
-    "shadow": True,
-    "shape": "callout",
-    "shared": False,
-    "snap": None,
-    "split": False,
-    "style": Style(color="#333333", cursor="default", fontSize="12px", pointerEvents="none", whiteSpace="nowrap"),
-    "useHTML": False,
-    "valueDecimals": None,
-    "valuePrefix": None,
-    "valueSuffix": None,
-    "xDateFormat": None,
-}
-
-"xAxis": [{
-    "allowDecimals": True,
-    "alternateGridColor": None,
-    "breaks": [Break(breakSize=0, from_=None, repeat=0, to=None)]
-    "categories": None,
-    "ceiling":None,
-    "className":None,
-    "crosshair": Crosshair(className=None, color=None, dashStyle="Solid", snap=True, width=None, zIndex=2),
-    "dateTimeLabelFormats": None,
-    "description": None,
-    "endOnTick": False,
-    "events": {…},
-    "floor": None,
-    "gridLineColor": "#e6e6e6",
-    "gridLineDashStyle": "Solid",
-    "gridLineWidth": 0,
-    "gridZIndex": 1,
-    "id": None,
-    "labels": Labels(align=None, autoRotation=[-45], autoRotationLimit=80, distance=15, enabled=True, format="{value}", formatter=None, maxStaggerLines=5,
-                     overflow=None, padding=5, reserveSpace=True, rotation=0, staggerLines=None, step=None, style=Style(color="#666666", cursor="default", fontSize="11px"),
-                     useHTML=False, x=0, y=None, zIndex=7)
-    "lineColor": "#ccd6eb",
-    "lineWidth": 1,
-    "linkedTo": None,
-    "max": None,
-    "maxPadding": 0.01,
-    "maxZoom": None,
-    "min": None,
-    "minPadding": 0.01,
-    "minRange": None,
-    "minTickInterval": None,
-    "minorGridLineColor": "#f2f2f2",
-    "minorGridLineDashStyle": "Solid",
-    "minorGridLineWidth": 1,
-    "minorTickColor": "#999999",
-    "minorTickInterval": None,
-    "minorTickLength": 2,
-    "minorTickPosition": "outside",
-    "minorTickWidth": 0,
-    "offset": 0,
-    "opposite": False,
-    "plotBands": [PlotBand(borderColor=None, borderWidth=0, className=None, color=None, events=None, from_=None, id=None,
-                  label=Label(align="center", rotation=0, style=None, text=None, textAlign= None, useHTML=False, verticalAlign="top", x=None, y=None),
-                  to=None, zIndex=None)],
-    "plotLines": [PlotLine(className=None, color=None, dashStyle="Solid", events=None, id=None,
-                           label=Label(align="left", rotation=None, style= None, text=None, textAlign= None, useHTML=False, verticalAlign="top", x=None, y=None),
-                           value=None, width=None, zIndex=None)],
-    "reversed": False,
-    "showEmpty": True,
-    "showFirstLabel": True,
-    "showLastLabel": True,
-    "softMax": None,
-    "softMin": None,
-    "startOfWeek": 1,
-    "startOnTick": False,
-    "tickAmount": None,
-    "tickColor": "#ccd6eb",
-    "tickInterval": None,
-    "tickLength": 10,
-    "tickPixelInterval": None,
-    "tickPosition": "outside",
-    "tickPositioner": None,
-    "tickPositions": None,
-    "tickWidth": 1,
-    "tickmarkPlacement": None,
-    "title": AxisTitle( align="middle", enabled="middle", margin=None, offset=None, reserveSpace=True, rotation=0, style=Style(color="#666666"), text=None, x=0, y=0)
-    "type": "linear",
-    "uniqueNames": True,
-    "units":None,
-    "visible": True,
-}]
+    def __init__(self, enabled=True, href=None, position=None, style=None, text=None):
+        
+        self.check("position", position, Position)
+        self.check("style", style, Style)
+    
+        super(__class__, self).__init__(locals())
 
 
-"yAxis": [{
-    "allowDecimals": True,
-    "alternateGridColor": None,
-    "angle": 0,
-    "breaks": [Break(breakSize=0, from_=None, repeat=0, to=None)]
-    "categories": None,
-    "ceiling":None,
-    "className":None,
-    "crosshair": Crosshair(className=None, color=None, dashStyle="Solid", snap=True, width=None, zIndex=2),
-    "dateTimeLabelFormats": None,
-    "description": None,
-    "endOnTick": True,
-    "events": {…},
-    "floor": None,
-    "gridLineColor": "#e6e6e6",
-    "gridLineDashStyle": "Solid",
-    "gridLineInterpolation": None,
-    "gridLineWidth": 1,
-    "gridZIndex": 1,
-    "id": None,
-    "labels": Labels(align="right", autoRotation=[-45], autoRotationLimit=80, distance=-25, enabled=True, format="{value}", formatter=None, maxStaggerLines=5,
-                     overflow=None, padding=5, reserveSpace=True, rotation=0, staggerLines=None, step=None, style=Style(color="#666666", cursor="default", fontSize="11px"),
-                     useHTML=False, x=0, y=None, zIndex=7)
-    "lineColor": "#ccd6eb",
-    "lineWidth": 0,
-    "linkedTo": None,
-    "max": None,
-    "maxColor": "#003399",
-    "maxPadding": 0.05,
-    "maxZoom": None,
-    "min": None,
-    "minColor": "#e6ebf5",
-    "minPadding": 0.05,
-    "minRange": None,
-    "minTickInterval": None,
-    "minorGridLineColor": "#f2f2f2",
-    "minorGridLineDashStyle": "Solid",
-    "minorGridLineWidth": 1,
-    "minorTickColor": "#999999",
-    "minorTickInterval": None,
-    "minorTickLength": 2,
-    "minorTickPosition": "outside",
-    "minorTickWidth": 0,
-    "offset": 0,
-    "opposite": False,
-    "plotBands": [PlotBand(borderColor=None, borderWidth=0, className=None, color=None, events=None, from_=None, id=None,
-                  label=Label(align="center", rotation=0, style=None, text=None, textAlign= None, useHTML=False, verticalAlign="top", x=None, y=None),
-                  to=None, zIndex=None)],
-    "plotLines": [PlotLine(className=None, color=None, dashStyle="Solid", events=None, id=None,
-                           label=Label(align="left", rotation=None, style= None, text=None, textAlign= None, useHTML=False, verticalAlign="top", x=None, y=None),
-                           value=None, width=None, zIndex=None)],
-    "reversed": False,
-    "reversedStacks": True,
-    "showEmpty": True,
-    "showFirstLabel": True,
-    "showLastLabel": None,
-    "softMax": None,
-    "softMin": None,
-    "stackLabels": {
-        "align": None,
-        "enabled": False,
-        "format": "{total}",
-        "formatter": None,
-        "rotation": 0,
-        "style": Style(color="#000000", fontSize="11px", fontWeight="bold", textShadow="1px 1px contrast, -1px -1px contrast, -1px 1px contrast, 1px -1px contrast"),
-        "textAlign": None,
-        "useHTML": False,
-        "verticalAlign": None,
-        "x": None,
-        "y": None,
-    },
-    "startOfWeek": 1,
-    "startOnTick": True,
-    "stops": None,
-    "tickAmount": None,
-    "tickColor": "#ccd6eb",
-    "tickInterval": None,
-    "tickLength": 10,
-    "tickPixelInterval": None,
-    "tickPosition": "outside",
-    "tickPositioner": None,
-    "tickPositions": None,
-    "tickWidth": 0,
-    "tickmarkPlacement": None,
-    "title": AxisTitle( align="middle", enabled="middle", margin=40, offset=None, reserveSpace=True, rotation=270, style=Style(color="#666666"), text="Values", x=0, y=None)
-    "type": "linear",
-    "uniqueNames": True,
-    "units":None,
-    "visible": True,
-}]
+class Events(HCBase):
+
+    def __init__(self addSeries=None, afterPrint=None, beforePrint=None, click=None, drilldown=None, drillup=None,
+                 drillupall=None, load=None, redraw=None, render=None, selection=None):
+
+        super(__class__, self).__init__(locls())
+
+
+class Chart(HCBase):
+
+    def __init__(self, alignTicks=None, animation=None, backgroundColor=None, borderColor=None,
+                 borderRadius=None, borderWidth=None, className=None, colorCount=None, 
+                 defaultSeriesType=None, description=None, events=None, height=None, 
+                 ignoreHiddenSeries=None, inverted=None, margin=None, marginBottom=None, marginLeft=None, 
+                 marginRight=None, marginTop=None, panKey=None, panning=None, pinchType=None, 
+                 plotBackgroundColor=None, plotBackgroundImage=None, plotBorderColor=None, 
+                 plotBorderWidth=None, plotShadow=None, polar=None, reflow=None, renderTo=None, 
+                 selectionMarkerFill=None, shadow=None, showAxes=None, spacing=None, spacingBottom=None, 
+                 spacingLeft=None, spacingRight=None, spacingTop=None, style=None, type_=None, 
+                 typeDescription=None, width=None, zoomType=None):
+        
+        self.check("style", style, Style)
+        self.check("event", event, Event)
+    
+        super(__class__, self).__init__(locals())
+
+
+class Data(HCBase):
+
+    def __init__(columns=None, complete=None, csv=None, dateFormat=None, decimalPoint=None, endColumn=None, 
+                 endRow=None, firstRowAsNames=None, googleSpreadsheetKey=None, googleSpreadsheetWorksheet=None, 
+                 itemDelimiter=None, lineDelimiter= "\n", parseDate=None, parsed=None, rows=None, 
+                 seriesMapping= None, startColumn= 0, startRow= 0, switchRowsAndColumns= False, table=None) 
+    
+        super(__class__, self).__init__(locals())
+
+
+class DrillButton(HCBase):
+    
+    def __init__(self, position=None, relativeTo=None, theme=None)
+        
+        self.check("position", position, Position)
+
+        super(__class__, self).__init__(locals())
+
+
+class DrillDown(HCBase):
+    
+    def __init__(self, activeAxisLabelStyle=None, activeDataLabelStyle=None, allowPointDrilldown=None, 
+                 animation=None, drillUpButton=None, series=None):
+    
+        self.check("activeAxisLabelStyle", activeAxisLabelStyle, Style)
+        self.check("activeDataLabelStyle", activeDataLabelStyle, Style)
+        self.check("drillUpButton", drillUpButton, DrillUpButton)
+
+        super(__class__, self).__init__(locals())
+
+
+class ContextButton(HCBase):
+    def __init__(self, align=None, enabled=None, height=None, menuItems=None, onclick=None, symbol=None, 
+                 symbolFill=None, symbolSize=None, symbolStroke=None, symbolStrokeWidth=None, symbolX=None, 
+                 symbolY=None, text=None, theme=None, verticalAlign=None, width=None, x=None, y=None):
+
+        super(__class__, self).__init__(locals())
+
+
+class Buttons(HCBase):
+
+    def __init__(self, contextButtons=None):
+
+        self.check("contextButtons", contextButtons, ContextButtons)
+
+        super(__class__, self).__init__(locals())
+
+class ButtonOptions(HCBase):
+
+    def __init__(self, align=None, enabled=None, height=None, symbolFill=None, symbolSize=None, 
+                 symbolStroke=None, symbolStrokeWidth=None, symbolX=None, symbolY=None, text=None, 
+                 theme=None, verticalAlign=None, width=None, y=None):
+
+        super(__class__, self).__init__(locals())
+
+
+class ExportingNavigation(HCBase):
+    
+    def _init__(self, buttonOptions=None, menuItemHoverStyle=None, menuItemStyle=None, menuStyle=None):
+
+        super(__class__, self).__init__(locals())
+
+
+class Exporting(HCBase):
+
+    def __init__(self, allowHTML=None, buttons=None, chartOptions=None, enabled=None, error=None, 
+                 fallbackToExportServer=None, filename=None, formAttributes=None, libURL=None, 
+                 printMaxWidth=None, scale=None, sourceHeight=None, sourceWidth=None, type=None, 
+                 url=None, width=None):
+        self.check("buttons", buttons, Buttons)
+
+
+class Item(HCBase):
+
+    def __init__(html=None, style=None):
+        
+        self.check("style", style, Style)
+    
+        super(__class__, self).__init__(locals())
+
+
+class LabelOpts(HCBase):
+
+    def __init__(items=None, style=None):
+        
+        self.check("items", items, Item, True)
+        self.check("style", style, Style)
+        
+        super(__class__, self).__init__(locals())
+
+
+class LegendNavigation(HCBase):
+    
+    def __init__(activeColor=None, animation=None, arrowSize=None, enabled=None, inactiveColor=None, style=None):
+    
+        super(__class__, self).__init__(locals())
+
+
+class Legend(HCBase):
+    
+    def __init__(self, align=None, backgroundColor=None, borderColor=None, borderRadius=None, borderWidth=None, 
+                 enabled=None, floating=None, itemDistance=None, itemHiddenStyle=None, itemHoverStyle=None, 
+                 itemMarginBottom=None, itemMarginTop=None, itemStyle=None, itemWidth=None, labelFormat=None, 
+                 labelFormatter=None, layout=None, lineHeight=None, margin=None, maxHeight=None, navigation=None, 
+                 padding=None, reversed=None, rtl=None, shadow=None, squareSymbol=None, style=None, symbolHeight=None, 
+                 symbolPadding=None, symbolRadius=None, symbolWidth=None, title=None, useHTML=None, verticalAlign=None, 
+                 width=None, x=None, y=None)
+        
+        self.check("title", title, Title)
+        self.check("navigation", navigation, LegendNavigation)
+    
+        super(__class__, self).__init__(locals())
+
+
+class NoData(HCBase):
+    
+    def __init__(self, attr=None, position=None, style=None, useHTML=None):
+
+        self.check("position", position, Position)
+        self.check("style", style, Style)
+
+        super(__class__, self).__init__(locals())
+
+class Background(HCBase):
+    
+    def __init__(self, backgroundColor=None, borderColor=None, borderWidth=None, className=None, 
+                 innerRadius=None, outerRadius=None, shape=None):
+
+        super(__class__, self).__init__(locals())
+
+
+class Pane(HCBase):
+
+    def __init__(self, background=None, center=None, endAngle=None, size=None, startAngle=None):
+
+        self.check("background", background, Background, True)
+
+        super(__class__, self).__init__(locals())
+
+
+class Tooltip(HCBase)
+    
+    def __init__(self, animation=None, backgroundColor=None, borderColor=None, borderRadius=None, borderWidth=None, 
+                 crosshairs=None, dateTimeLabelFormats=None, enabled=None, followPointer=None, followTouchMove=None, 
+                 footerFormat=None, formatter=None, headerFormat=None, hideDelay=None, padding=None, pointFormat=None, 
+                 pointFormatter=None, positioner=None, shadow=None, shape=None, shared=None, snap=None, split=None, 
+                 style=None, useHTML=None, valueDecimals=None, valuePrefix=None, valueSuffix=None, xDateFormat=None)
+
+        self.check("style", style, Style)
+    
+        super(__class__, self).__init__(locals())
+
+
+class StackLabels(HCBase):
+    
+    def __init__(self, align=None, enabled=None, format=None, formatter=None, rotation=None, style=None, 
+                 textAlign=None, useHTML=None, verticalAlign=None, x=None, y=None):
+        
+        self.check("style", style, Style)
+    
+        super(__class__, self).__init__(locals())
+
+
+class Axis(HCBase):
+
+    def __init__(self, allowDecimals=None, alternateGridColor=None, breaks=None, categories=None, ceiling=None, 
+                 className=None, crosshair=None, dateTimeLabelFormats=None, description=None, endOnTick=None, 
+                 events=None, floor=None, gridLineColor=None, gridLineDashStyle=None, gridLineWidth=None, id_=None, 
+                 labels=None, lineColor=None, lineWidth=None, linkedTo=None, max_=None, maxPadding=None, maxZoom=None, 
+                 min_=None, minPadding=None, minRange=None, minTickInterval=None, minorGridLineColor=None, 
+                 minorGridLineDashStyle=None, minorGridLineWidth=None, minorTickColor=None, minorTickInterval=None, 
+                 minorTickLength=None, minorTickPosition=None, minorTickWidth=None, offset=None, opposite=None, 
+                 plotBands=None, plotLines=None, reversed_=None, showEmpty=None, showFirstLabel=None, showLastLabel=None, 
+                 softMax=None, softMin=None, startOfWeek=None, startOnTick=None, tickAmount=None, tickColor=None, 
+                 tickInterval=None, tickLength=None, tickPixelInterval=None, tickPosition=None, tickPositioner=None, 
+                 tickPositions=None, tickWidth=None, tickmarkPlacement=None, title=None, type_=None, uniqueNames=None, 
+                 units=None, visible=None):
+
+        self.check("label", label, Label)
+        self.check("plotLines", plotLines, PlotLine, True)
+        self.check("plotBands", plotBands, PlotBands, True)
+        self.check("title", title, title)
+        self.check("crosshair", crosshair, crosshair)
+        super(__class__, self).__init__(locals())
+
+
+class XAxis(Axis):
+
+    def __init__(self, allowDecimals=None, alternateGridColor=None, breaks=None, categories=None, ceiling=None, 
+                 className=None, crosshair=None, dateTimeLabelFormats=None, description=None, endOnTick=None, 
+                 events=None, floor=None, gridLineColor=None, gridLineDashStyle=None, gridLineWidth=None, id_=None, 
+                 labels=None, lineColor=None, lineWidth=None, linkedTo=None, max_=None, maxPadding=None, maxZoom=None, 
+                 min_=None, minPadding=None, minRange=None, minTickInterval=None, minorGridLineColor=None, 
+                 minorGridLineDashStyle=None, minorGridLineWidth=None, minorTickColor=None, minorTickInterval=None, 
+                 minorTickLength=None, minorTickPosition=None, minorTickWidth=None, offset=None, opposite=None, 
+                 plotBands=None, plotLines=None, reversed_=None, showEmpty=None, showFirstLabel=None, showLastLabel=None, 
+                 softMax=None, softMin=None, startOfWeek=None, startOnTick=None, tickAmount=None, tickColor=None, 
+                 tickInterval=None, tickLength=None, tickPixelInterval=None, tickPosition=None, tickPositioner=None, 
+                 tickPositions=None, tickWidth=None, tickmarkPlacement=None, title=None, type_=None, uniqueNames=None, 
+                 units=None, visible=None):
+
+        self.check("breaks", breaks, Break, True)
+ 
+        super(__class__, self).__init__(allowDecimals, alternateGridColor, categories, ceiling,
+                                        className, crosshair, dateTimeLabelFormats, description, endOnTick, 
+                                        events, floor, gridLineColor, gridLineDashStyle, gridLineWidth, id_, 
+                                        labels, lineColor, lineWidth, linkedTo, max_, maxPadding, maxZoom, 
+                                        min_, minPadding, minRange, minTickInterval, minorGridLineColor, 
+                                        minorGridLineDashStyle, minorGridLineWidth, minorTickColor, 
+                                        minorTickInterval, minorTickLength, minorTickPosition, minorTickWidth, 
+                                        offset, opposite, plotBands, plotLines, reversed_, showEmpty, 
+                                        showFirstLabel, showLastLabel, softMax, softMin, startOfWeek, 
+                                        startOnTick, tickAmount, tickColor, tickInterval, tickLength, 
+                                        tickPixelInterval, tickPosition, tickPositioner, tickPositions, 
+                                        tickWidth, tickmarkPlacement, title, type_, uniqueNames, units, visible)
+        params = {"breaks": breaks}
+        self.setIfExists(params)
+
+
+class YAxis(Axis):
+
+    def __init__(self, allowDecimals=None, alternateGridColor=None, breaks=None, categories=None, ceiling=None, 
+                 className=None, crosshair=None, dateTimeLabelFormats=None, description=None, endOnTick=None, 
+                 events=None, floor=None, gridLineColor=None, gridLineDashStyle=None, gridLineWidth=None, id_=None, 
+                 labels=None, lineColor=None, lineWidth=None, linkedTo=None, max_=None, maxPadding=None, maxZoom=None, 
+                 min_=None, minPadding=None, minRange=None, minTickInterval=None, minorGridLineColor=None, 
+                 minorGridLineDashStyle=None, minorGridLineWidth=None, minorTickColor=None, minorTickInterval=None, 
+                 minorTickLength=None, minorTickPosition=None, minorTickWidth=None, offset=None, opposite=None, 
+                 plotBands=None, plotLines=None, reversed_=None, showEmpty=None, showFirstLabel=None, showLastLabel=None, 
+                 softMax=None, softMin=None, startOfWeek=None, startOnTick=None, tickAmount=None, tickColor=None, 
+                 tickInterval=None, tickLength=None, tickPixelInterval=None, tickPosition=None, tickPositioner=None, 
+                 tickPositions=None, tickWidth=None, tickmarkPlacement=None, title=None, type_=None, uniqueNames=None, 
+                 units=None, visible=None):
+
+        self.check("stackLabels", stackLabels, StackLabels)
+        self.check("breaks", breaks, Break, True)
+
+        super(__class__, self).__init__(allowDecimals, alternateGridColor, categories, ceiling,
+                                        className, crosshair, dateTimeLabelFormats, description, endOnTick, 
+                                        events, floor, gridLineColor, gridLineDashStyle, gridLineWidth, id_, 
+                                        labels, lineColor, lineWidth, linkedTo, max_, maxPadding, maxZoom, 
+                                        min_, minPadding, minRange, minTickInterval, minorGridLineColor, 
+                                        minorGridLineDashStyle, minorGridLineWidth, minorTickColor, 
+                                        minorTickInterval, minorTickLength, minorTickPosition, minorTickWidth, 
+                                        offset, opposite, plotBands, plotLines, reversed_, showEmpty, 
+                                        showFirstLabel, showLastLabel, softMax, softMin, startOfWeek, 
+                                        startOnTick, tickAmount, tickColor, tickInterval, tickLength, 
+                                        tickPixelInterval, tickPosition, tickPositioner, tickPositions, 
+                                        tickWidth, tickmarkPlacement, title, type_, uniqueNames, units, visible)
+
+        params = {"angle": angle, "breaks": breaks, "gridLineInterpolation": gridLineInterpolation, "gridZIndex": gridZIndex, 
+                  "maxColor": maxColor, "minColor": minColor, "reversedStacks": reversedStacks, 
+                  "stackLabels": stackLabels, "stops": stops}
+        self.setIfExists(params)
+
+
+class ZAxis(Axis):
+  
+    def __init__(self, allowDecimals=None, alternateGridColor=None, categories=None, ceiling=None, 
+                 className=None, crosshair=None, dateTimeLabelFormats=None, description=None, endOnTick=None, 
+                 events=None, floor=None, gridLineColor=None, gridLineDashStyle=None, gridLineWidth=None, id_=None, 
+                 labels=None, lineColor=None, lineWidth=None, linkedTo=None, max_=None, maxPadding=None, maxZoom=None, 
+                 min_=None, minPadding=None, minRange=None, minTickInterval=None, minorGridLineColor=None, 
+                 minorGridLineDashStyle=None, minorGridLineWidth=None, minorTickColor=None, minorTickInterval=None, 
+                 minorTickLength=None, minorTickPosition=None, minorTickWidth=None, offset=None, opposite=None, 
+                 plotBands=None, plotLines=None, reversed_=None, showEmpty=None, showFirstLabel=None, showLastLabel=None, 
+                 softMax=None, softMin=None, startOfWeek=None, startOnTick=None, tickAmount=None, tickColor=None, 
+                 tickInterval=None, tickLength=None, tickPixelInterval=None, tickPosition=None, tickPositioner=None, 
+                 tickPositions=None, tickWidth=None, tickmarkPlacement=None, title=None, type_=None, uniqueNames=None, 
+                 units=None, visible=None):
+
+        super(__class__, self).__init__(allowDecimals, alternateGridColor, categories, ceiling,
+                                        className, crosshair, dateTimeLabelFormats, description, endOnTick, 
+                                        events, floor, gridLineColor, gridLineDashStyle, gridLineWidth, id_, 
+                                        labels, lineColor, lineWidth, linkedTo, max_, maxPadding, maxZoom, 
+                                        min_, minPadding, minRange, minTickInterval, minorGridLineColor, 
+                                        minorGridLineDashStyle, minorGridLineWidth, minorTickColor, 
+                                        minorTickInterval, minorTickLength, minorTickPosition, minorTickWidth, 
+                                        offset, opposite, plotBands, plotLines, reversed_, showEmpty, 
+                                        showFirstLabel, showLastLabel, softMax, softMin, startOfWeek, 
+                                        startOnTick, tickAmount, tickColor, tickInterval, tickLength, 
+                                        tickPixelInterval, tickPosition, tickPositioner, tickPositions, 
+                                        tickWidth, tickmarkPlacement, title, type_, uniqueNames, units, visible)
+
+class Figure(HCBase):
+    def __init__(self, chart=None, colors=None, credits=None, data=None, drilldown=None, exporting=None, 
+                labels=None, legend=None, loading=None, navigation=None, noData=None, pane=None, 
+                plotOptions=None, responsive=None, series=None, subtitle=None, title=None, tooltip=None, 
+                xAxis=None, yAxis=None, zAxis=None):
+        
+        self.check("chart", chart, Chart)
+        self.check("colors", colors, list)
+        self.check("credits", credits, Credits)
+        self.check("data", data, Data)
+        self.check("drilldown", drilldown, Drilldown)
+        self.check("exporting", exporting, Exporting)
+        self.check("labels", labels, Labels)
+        self.check("legend", legend, Legend)
+        self.check("navigation", navigation, ExportingNavigation)
+        self.check("noData", noData, NoData)
+        self.check("pane", pane, Pane)
+#        self.check("plotOptions", plotOptions, PlotOptions)
+        self.check("responsive", responsive, Responsive)
+        self.check("series", series, Series)
+        self.check("subtitle", subtitle, Subtitle)
+        self.check("title", title, Title)
+        self.check("tooltip", tooltip, Tooltip)
+        self.check("xAxis", xAxis, XAxis)
+        self.check("yAxis", yAxis, YAxis)
+        self.check("zAxis", zAxis, ZAxis)
 
 
 
-"zAxis": {
-    "allowDecimals": True,
-    "alternateGridColor": None,
-    "categories": None,
-    "ceiling":None,
-    "className":None,
-    "crosshair": Crosshair(className=None, color=None, dashStyle="Solid", snap=True, width=None, zIndex=2)
-    "dateTimeLabelFormats": None,
-    "description": None,
-    "endOnTick": False,
-    "events": {
-        "afterBreaks": None,
-        "afterSetExtremes": None,
-        "pointBreak": None,
-        "pointInBreak":None,
-        "setExtremes": None,
-    },
-    "floor": None,
-    "gridLineColor": "#e6e6e6",
-    "gridLineDashStyle": "Solid",
-    "gridLineWidth": 0,
-    "gridZIndex": 1,
-    "id": None,
-    "labels": Labels(align=None, autoRotation=[-45], autoRotationLimit=80, distance=15, enabled=True, format="{value}", formatter=None, maxStaggerLines=5,
-                     overflow=None, padding=5, reserveSpace=True, rotation=0, staggerLines=None, step=None, style=Style(color="#666666", cursor="default", fontSize="11px"),
-                     useHTML=False, x=0, y=None, zIndex=7)
-    "lineColor": "#ccd6eb",
-    "lineWidth": 1,
-    "linkedTo": None,
-    "max": None,
-    "maxPadding": 0.01,
-    "maxZoom": None,
-    "min": None,
-    "minPadding": 0.01,
-    "minRange": None,
-    "minTickInterval": None,
-    "minorGridLineColor": "#f2f2f2",
-    "minorGridLineDashStyle": "Solid",
-    "minorGridLineWidth": 1,
-    "minorTickColor": "#999999",
-    "minorTickInterval": None,
-    "minorTickLength": 2,
-    "minorTickPosition": "outside",
-    "minorTickWidth": 0,
-    "offset": 0,
-    "opposite": False,
-    "plotBands": [PlotBand(borderColor=None, borderWidth=0, className=None, color=None, events=None, from_=None, id=None,
-                  label=Label(align="center", rotation=0, style=None, text=None, textAlign= None, useHTML=False, verticalAlign="top", x=None, y=None),
-                  to=None, zIndex=None)],
-    "plotLines": [PlotLine(className=None, color=None, dashStyle="Solid", events=None, id=None,
-                           label=Label(align="left", rotation=None, style= None, text=None, textAlign= None, useHTML=False, verticalAlign="top", x=None, y=None),
-                           value=None, width=None, zIndex=None)],
-    "reversed": False,
-    "showEmpty": True,
-    "showFirstLabel": True,
-    "showLastLabel": True,
-    "softMax": None,
-    "softMin": None,
-    "startOfWeek": 1,
-    "startOnTick": False,
-    "tickAmount": None,
-    "tickColor": "#ccd6eb",
-    "tickInterval": None,
-    "tickLength": 10,
-    "tickPixelInterval": None,
-    "tickPosition": "outside",
-    "tickPositioner": None,
-    "tickPositions": None,
-    "tickWidth": 1,
-    "tickmarkPlacement": None,
-    "title": AxisTitle(align="middle", enabled="middle", margin=None, offset=None, reserveSpace=True, rotation=0, style=Style(color="#666666"), text=None, x=0, y=None),
-    "type": "linear",
-    "uniqueNames": True,
-    "units":None,
-    "visible": True,
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
