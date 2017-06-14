@@ -14,24 +14,32 @@
 
 
 from ..layer import Layer
+from ..highcharts.charts import Line as HcLine
+from ..highcharts import Marker
 
 
 class Line(Layer):
 
     def __init__(self, *dataOrConfigs, position=None, showLegend=False, color=None,
-                 lineType="Solid", lineWidth=2, showMarker=None, marker="diamond"):
+                 lineType="Solid", lineWidth=2, showMarker=None, shape="diamond", size=None):
 
         super(__class__, self).__init__(dataOrConfigs, position, showLegend, color=color,        # noqa F821
-                                        lineType=lineType, showMarker=showMarker, marker=marker)
-        self.options = {"type": "line", "dashStyle": lineType, "lineWidth": lineWidth}
+                                        lineType=lineType, showMarker=showMarker, shape=shape)
+
+        self.series = HcLine(dashStyle=lineType, lineWidth=lineWidth)
 
         if color is not None:
-            self.options["color"] = color
+            self.series.color = color
 
-        self.options["marker"] = {"symbol": marker}
+        self.series.marker = Marker(
+            radius=(3 if size is None else size),
+            symbol=("diamond" if shape is None else shape)
+        )
 
         if showMarker is not None:
-            self.options["marker"]["enabled"] = showMarker
+            self.options.marker.enabled = showMarker
 
-    def prepareData(self, df, mx, my):
-        return df[[mx, my]].to_dict("split")["data"]
+    def getSeries(self, df, mx, my):
+        self.series.data = df[[mx, my]].to_dict("split")["data"]
+        self.series.name = my
+        return self.series

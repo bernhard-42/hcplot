@@ -29,7 +29,7 @@
 from .base import HCBase
 from .color import Color
 from .crosshair import _CrossHair
-from .types import Function, CSSObject, FloatOrAuto
+from .types import Function, CSSObject, FloatOrAuto, Float64
 from .position import XYFloat
 from .events import PlotEvents
 from traitlets import Unicode, Bool, Integer, Instance, Float, List, Tuple, Any, Dict
@@ -113,7 +113,7 @@ class PlotLine(HCBase):
 
 class AxisTitle(XYFloat):
     align = Unicode(None, allow_none=True)
-    enabled = Unicode(None, allow_none=True)
+    enabled = Bool(None, allow_none=True)
     margin = Integer(None, allow_none=True)
     offset = Integer(None, allow_none=True)
     reserveSpace = Bool(None, allow_none=True)
@@ -122,6 +122,21 @@ class AxisTitle(XYFloat):
     text = Unicode(None, allow_none=True)
     x = Float(None, allow_none=True)
     y = Float(None, allow_none=True)
+
+    def __init__(self, **kwargs):
+        super(__class__, self).__init__(**kwargs)         # noqa F821
+
+
+class StackLabels(XYFloat):
+    align = Unicode(None, allow_none=True)
+    enabled = Bool(None, allow_none=True)
+    format_ = Unicode(None, allow_none=True)
+    formatter = Function(None, allow_none=True)
+    rotation = Float(None, allow_none=True)
+    style = CSSObject(None, allow_none=True)
+    textAlign = Unicode(None, allow_none=True)
+    useHTML = Bool(None, allow_none=True)
+    verticalAlign = Unicode(None, allow_none=True)
 
     def __init__(self, **kwargs):
         super(__class__, self).__init__(**kwargs)         # noqa F821
@@ -148,10 +163,10 @@ class ZAxis(HCBase):
     lineColor = Color(None, allow_none=True)
     lineWidth = Integer(None, allow_none=True)
     linkedTo = Integer(None, allow_none=True)
-    max_ = Float(None, allow_none=True)
+    max_ = Float64(None, allow_none=True)
     maxPadding = Integer(None, allow_none=True)
     maxZoom = Integer(None, allow_none=True)
-    min_ = Float(None, allow_none=True)
+    min_ = Float64(None, allow_none=True)
     minPadding = Integer(None, allow_none=True)
     minRange = Integer(None, allow_none=True)
     minTickInterval = Float(None, allow_none=True)
@@ -195,24 +210,11 @@ class ZAxis(HCBase):
 class XAxis(ZAxis):
     breaks = List(Instance(Break, allow_none=False), allow_none=True)
 
-
-class StackLabels(XYFloat):
-    align = Unicode(None, allow_none=True)
-    enabled = Bool(None, allow_none=True)
-    format_ = Unicode(None, allow_none=True)
-    formatter = Function(None, allow_none=True)
-    rotation = Float(None, allow_none=True)
-    style = CSSObject(None, allow_none=True)
-    textAlign = Unicode(None, allow_none=True)
-    useHTML = Bool(None, allow_none=True)
-    verticalAlign = Unicode(None, allow_none=True)
-
     def __init__(self, **kwargs):
         super(__class__, self).__init__(**kwargs)         # noqa F821
 
 
-class YAxis(ZAxis):
-    breaks = List(Instance(Break, allow_none=False), allow_none=True)
+class YAxis(XAxis):
     gridLineInterpolation = Unicode(None, allow_none=True)
     gridZIndex = Integer(None, allow_none=True)
     maxColor = Color(None, allow_none=True)
@@ -220,3 +222,6 @@ class YAxis(ZAxis):
     reversedStacks = Bool(None, allow_none=True)
     stackLabels = Instance(StackLabels, allow_none=True)
     stops = List(Tuple(Float(), Color()))
+
+    def __init__(self, **kwargs):
+        super(__class__, self).__init__(**kwargs)         # noqa F821

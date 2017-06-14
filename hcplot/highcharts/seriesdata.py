@@ -16,6 +16,7 @@ from .color import Color
 from .datalabels import DataLabels
 from .events import PlotEvents2
 from .position import XYFloat
+from .marker import Marker
 from traitlets import Unicode, Bool, Integer, Instance, TraitType, Undefined
 
 
@@ -29,6 +30,7 @@ class SeriesData(XYFloat):
     events = Instance(PlotEvents2, allow_none=True)
     id_ = Unicode(None, allow_none=True)
     labelrank = Integer(None, allow_none=True)
+    marker = Instance(Marker, allow_none=True)
     name = Unicode(None, allow_none=True)
     selected = Bool(None, allow_none=True)
 

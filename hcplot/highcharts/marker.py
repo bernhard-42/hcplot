@@ -14,7 +14,7 @@
 
 from .base import HCBase
 from .color import Color, _FillColor
-from traitlets import Integer, Instance, Bool
+from traitlets import Integer, Instance, Bool, Unicode, Float
 
 
 class MarkerSelect(HCBase):
@@ -44,7 +44,7 @@ class Marker(HCBase):
     height = Integer(None, allow_none=True)
     lineColor = Color(None, allow_none=True)
     lineWidth = Integer(None, allow_none=True)
-    radius = Integer(None, allow_none=True)
-    states = Integer(None, allow_none=True)
-    symbol = Integer(None, allow_none=True)
+    radius = Float(None, allow_none=True)
+    states = Instance(MarkerStates, allow_none=True)
+    symbol = Unicode(None, allow_none=True)
     width = Integer(None, allow_none=True)

@@ -16,7 +16,7 @@ from .data import Data, WrapData, GridData
 from .base import Base
 from .utils.json import ScipyEncoder
 from .scales import defaultScales
-from .components import Components
+from .components import Figure as Fig
 from .templates import createGrid, createWrap
 
 from uuid import uuid4
@@ -28,9 +28,11 @@ import json
 class Figure(Base):
 
     def __init__(self, *dataOrConfigs,   # DataFrame or ColumnDataSource (data)or Config objects
-                 width=1024, ratio=0.618, performanceTreshold=1000):    # global attributes
+                 width=1024, ratio=0.618, performanceTreshold=1000,     # global attributes
+                 **chartOptions):                                       # highcharts attributes
 
         self.id = str(uuid4())
+        self.figure = None
         self.layer = 0
         self.rows = self.cols = self.count = 1
         self.layers = []
@@ -40,6 +42,7 @@ class Figure(Base):
         self.width = width
         self.ratio = ratio
         self.performanceTreshold = performanceTreshold
+        self.chartOptions = chartOptions
         self.usePlotLevel = {}
 
         self.layout = {"type": "single", "labels": True}
@@ -183,10 +186,10 @@ class Figure(Base):
         for row in range(self.rows):
             for col in range(self.cols):
 
-                fig = Components().figure(zoomType="xy", exporting=False, title=None, legend=False)
+                self.figure = Fig(chartOptions=self.chartOptions)
 
                 if i != self.count - 1:
-                    fig.updateFigure(credits=False)
+                    self.figure.enableCredits(False)
 
                 if i < self.count:
                     for layer in self.layers:
@@ -211,24 +214,23 @@ class Figure(Base):
                         opts = layer.getMinMax(xScaleFree, yScaleFree)
                         self._setMinMax(*opts)
 
-                        data = layer.prepareData(data, mx, my)
-                        fig.addSeries(my, data, layer.options)
+                        self.figure.addSeries(layer.getSeries(data, mx, my))
 
-                    fig.addXAxis(title=None, max=self.xmax, min=self.xmin,
-                                 lineWidth=1, tickWidth=1, gridLineWidth=1)
-                    fig.addYAxis(title=None, max=self.ymax, min=self.ymin,
-                                 lineWidth=1, tickWidth=1, gridLineWidth=1)
+                    self.figure.addXAxis(max_=self.xmax, min_=self.xmin,
+                                         lineWidth=1, tickWidth=1, gridLineWidth=1)
+                    self.figure.addYAxis(max_=self.ymax, min_=self.ymin,
+                                         lineWidth=1, tickWidth=1, gridLineWidth=1)
 
                     if xScaleFree or row == self.rows - 1 or layoutType == "wrap":
-                        fig.updateChart(marginBottom=40,
-                                        height=(self.width // self.cols) * self.ratio + 30)
+                        self.figure.updateChart(marginBottom=40,
+                                                height=(self.width // self.cols) * self.ratio + 30)
                     else:
-                        fig.updateXAxis(labels=False)
+                        self.figure.xAxis.enableLabels(False)
 
                     if yScaleFree or col == 0:
-                        fig.updateChart(marginLeft=50,   width=self.width // self.cols + 40)
+                        self.figure.updateChart(marginLeft=50, width=self.width // self.cols + 40)
                     else:
-                        fig.updateYAxis(labels=False)
+                        self.figure.yAxis.enableLabels(False)
 
                 container = "hc_%s_%d-%d" % (self.id, row, col)
                 if isEmpty and xScaleFree and yScaleFree:
@@ -239,7 +241,7 @@ class Figure(Base):
                     html += dedent("""
                     //      Chart %d-%d
                             HC.chart("%s", %s);
-                    """) % (row, col, container, json.dumps(fig.get(), cls=ScipyEncoder))
+                    """) % (row, col, container, json.dumps(self.figure.toDict(), cls=ScipyEncoder))
 
                 i += 1
 

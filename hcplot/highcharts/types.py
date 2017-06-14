@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from traitlets import TraitType, Undefined
+import numpy as np
 
 
 class Function(TraitType):
@@ -27,6 +28,40 @@ class Function(TraitType):
 
     def validate(self, obj, value):
         if isinstance(value, str) and value.startswith("function()"):
+            return value
+        else:
+            self.error(obj, value)
+
+
+class Int64(TraitType):
+    """A CSS trait."""
+
+    default_value = 0
+    info_text = 'a python int or numpy int, in32, int64, ...'
+
+    def __init__(self, default_value=Undefined, allow_none=False, **kwargs):
+        super(__class__, self).__init__(default_value=default_value,          # noqa F821
+                                        allow_none=allow_none, **kwargs)
+
+    def validate(self, obj, value):
+        if isinstance(value, int) or np.issubdtype(value, int):
+            return value
+        else:
+            self.error(obj, value)
+
+
+class Float64(TraitType):
+    """A CSS trait."""
+
+    default_value = 0
+    info_text = 'a python float or numpy float, float64, ...'
+
+    def __init__(self, default_value=Undefined, allow_none=False, **kwargs):
+        super(__class__, self).__init__(default_value=default_value,          # noqa F821
+                                        allow_none=allow_none, **kwargs)
+
+    def validate(self, obj, value):
+        if isinstance(value, int) or np.issubdtype(value, float) or np.issubdtype(value, int):
             return value
         else:
             self.error(obj, value)

@@ -20,7 +20,6 @@ import numpy as np
 
 class ScipyEncoder(json.JSONEncoder):
     def default(self, o):
-
         if isinstance(o, pd.tslib.Timestamp):
             o = o.to_pydatetime()
 

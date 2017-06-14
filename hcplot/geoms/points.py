@@ -13,8 +13,10 @@
 # limitations under the License.
 
 from ..layer import Layer
-from ..components import point
 from ..utils.color import web2rgba, rgba2web
+from ..components import Point
+from ..highcharts import Marker
+from ..highcharts.charts import Scatter
 
 
 class Points(Layer):
@@ -27,28 +29,29 @@ class Points(Layer):
                                         color=color, alpha=alpha,
                                         lineWidth=0, lineColor=None, size=size, shape=shape)
 
-        self.options = {"type": "scatter",
-                        "marker": {"radius": 3 if size is None else size,
-                                   "symbol": "diamond" if shape is None else shape}}
+        marker = Marker(
+            radius=(3 if size is None else size),
+            symbol=("diamond" if shape is None else shape)
+        )
 
         rgba = web2rgba(color)
         if alpha is not None:
             rgba = rgba[:3] + (alpha,)
 
-        self.options["color"] = rgba2web(rgba)
+        self.series = Scatter(marker=marker, color=rgba2web(rgba))
 
         if lineWidth > 0:
-            self.options["marker"]["lineWidth"] = lineWidth
+            self.series.marker.lineWidth = lineWidth
 
         if lineColor is not None:
-            self.options["marker"]["lineColor"] = lineColor
+            self.series.marker.lineColor = rgba2web(lineColor)
 
-    def prepareData(self, df, mx, my):
+    def getSeries(self, df, mx, my):
         mapping = {"x": mx, "y": my}
         if df.shape[0] > self.figure.performanceTreshold:
             cols = list(mapping.values())
             df2 = df[cols]
-            result = df2.to_dict("split")["data"]
+            self.series.data = df2.to_dict("split")["data"]
         else:
             mapping.update(self.usePlotLevel)
             names = list(mapping.keys())
@@ -58,6 +61,7 @@ class Points(Layer):
 
             data = df2.to_dict("split")["data"]
 
-            result = [point(names, values, self.alpha) for values in data]
+            self.series.data = [Point(names, values, self.alpha).get() for values in data]
+        self.series.name = my
 
-        return result
+        return self.series

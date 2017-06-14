@@ -22,7 +22,10 @@ class HCBase(HasTraits):
         result = {}
         for key, cls in self.class_traits().items():
             value = getattr(self, key)
-            if value is not None:
+            if value is None:
+                if key in ["text"]:
+                    return {key: None}
+            else:
                 if key[-1] == "_":
                     key = key[:-1]
                 key = key.replace("_", "")
